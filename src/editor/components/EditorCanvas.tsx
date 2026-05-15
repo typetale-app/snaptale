@@ -14,13 +14,13 @@ export const EditorCanvas: React.FC = () => {
         const stage = stageRef.current;
         if (!stage) return;
 
-        const oldScale = stage.scaleX();
+        const oldScale = zoom;
         const pointer = stage.getPointerPosition();
         if (!pointer) return;
 
         const mousePointTo = {
-            x: (pointer.x - stage.x()) / oldScale,
-            y: (pointer.y - stage.y()) / oldScale,
+            x: (pointer.x - stagePos.x) / oldScale,
+            y: (pointer.y - stagePos.y) / oldScale,
         };
 
         const speed = 1.1;
@@ -36,33 +36,14 @@ export const EditorCanvas: React.FC = () => {
         });
     };
 
-    // Center stage when zoomed out
-    useEffect(() => {
-        if (zoom <= 1) {
-            setStagePos({
-                x: (stageSize.width * (1 - zoom)) / 2,
-                y: (stageSize.height * (1 - zoom)) / 2,
-            });
-        }
-    }, [zoom, stageSize, setStagePos]);
 
     return (
         <div className="relative group overflow-hidden w-full h-full flex items-center justify-center">
             <Stage
                 width={stageSize.width}
                 height={stageSize.height}
-                scaleX={zoom}
-                scaleY={zoom}
-                x={stagePos.x}
-                y={stagePos.y}
                 onWheel={handleWheel}
                 ref={stageRef}
-                draggable={zoom > 1}
-                onDragEnd={(e) => {
-                    if (e.target === e.currentTarget) {
-                        setStagePos({ x: e.target.x(), y: e.target.y() });
-                    }
-                }}
             >
                 <Layer>
                     <ImageLayer />

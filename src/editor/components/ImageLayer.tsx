@@ -1,11 +1,66 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { Group, Image as KonvaImage } from 'react-konva';
+import Konva from 'konva';
 import useImage from 'use-image';
 import { useEditor } from '../context/EditorContext';
 
 export const ImageLayer: React.FC = () => {
-    const { imageUrl, stageSize, setStageSize, setBaseScale, setCrop, imageRotation, imageScaleX, imageScaleY } = useEditor();
+    const { imageUrl, stageSize, setStageSize, setBaseScale, setCrop, crop, imageRotation, imageScaleX, imageScaleY, zoom, setZoom, stagePos, setStagePos } = useEditor();
     const [img] = useImage(imageUrl, 'anonymous');
+    const imageGroupRef = useRef<Konva.Group>(null);
+
+    useLayoutEffect(() => {
+        if (!imageGroupRef.current || !img || !crop) return;
+        const node = imageGroupRef.current;
+        const imageRect = node.getClientRect();
+        
+        if (imageRect.width === 0 || imageRect.height === 0) return;
+
+        let newX = stagePos.x;
+        let newY = stagePos.y;
+        let newZoom = zoom;
+        let needsUpdate = false;
+
+        const scaleToFixWidth = crop.width / imageRect.width;
+        const scaleToFixHeight = crop.height / imageRect.height;
+        
+        if (scaleToFixWidth > 1 || scaleToFixHeight > 1) {
+            const requiredExtraScale = Math.max(scaleToFixWidth, scaleToFixHeight);
+            newZoom = zoom * requiredExtraScale;
+            needsUpdate = true;
+            
+            imageRect.width *= requiredExtraScale;
+            imageRect.height *= requiredExtraScale;
+            imageRect.x = stagePos.x + (imageRect.x - stagePos.x) * requiredExtraScale;
+            imageRect.y = stagePos.y + (imageRect.y - stagePos.y) * requiredExtraScale;
+        }
+
+        if (imageRect.width >= crop.width) {
+            if (imageRect.x > crop.x) {
+                newX -= (imageRect.x - crop.x);
+                needsUpdate = true;
+            } else if (imageRect.x + imageRect.width < crop.x + crop.width) {
+                newX += (crop.x + crop.width) - (imageRect.x + imageRect.width);
+                needsUpdate = true;
+            }
+        }
+        if (imageRect.height >= crop.height) {
+            if (imageRect.y > crop.y) {
+                newY -= (imageRect.y - crop.y);
+                needsUpdate = true;
+            } else if (imageRect.y + imageRect.height < crop.y + crop.height) {
+                newY += (crop.y + crop.height) - (imageRect.y + imageRect.height);
+                needsUpdate = true;
+            }
+        }
+
+        if (needsUpdate) {
+            if (Math.abs(newZoom - zoom) > 0.001 || Math.abs(newX - stagePos.x) > 0.5 || Math.abs(newY - stagePos.y) > 0.5) {
+                setZoom(newZoom);
+                setStagePos({ x: newX, y: newY });
+            }
+        }
+    }, [zoom, stagePos, crop, img, imageRotation, imageScaleX, imageScaleY, setZoom, setStagePos]);
 
     useEffect(() => {
         if (img) {
@@ -37,19 +92,46 @@ export const ImageLayer: React.FC = () => {
     return (
         <Group>
             {/* Background Image (darkened) */}
-            <KonvaImage
-                image={img}
-                width={stageSize.width}
-                height={stageSize.height}
-                opacity={0.4}
-                offsetX={centerX}
-                offsetY={centerY}
-                x={centerX}
-                y={centerY}
-                rotation={imageRotation}
-                scaleX={imageScaleX}
-                scaleY={imageScaleY}
-            />
+            <Group 
+                name="image-group"
+                ref={imageGroupRef}
+                x={stagePos.x} 
+                y={stagePos.y} 
+                scaleX={zoom} 
+                scaleY={zoom}
+                draggable={true}
+                onDragMove={(e) => {
+                    const node = e.target;
+                    let newX = node.x();
+                    let newY = node.y();
+                    const imageRect = node.getClientRect();
+
+                    if (imageRect.width >= crop.width) {
+                        if (imageRect.x > crop.x) newX -= (imageRect.x - crop.x);
+                        else if (imageRect.x + imageRect.width < crop.x + crop.width) newX += (crop.x + crop.width) - (imageRect.x + imageRect.width);
+                    }
+                    if (imageRect.height >= crop.height) {
+                        if (imageRect.y > crop.y) newY -= (imageRect.y - crop.y);
+                        else if (imageRect.y + imageRect.height < crop.y + crop.height) newY += (crop.y + crop.height) - (imageRect.y + imageRect.height);
+                    }
+                    
+                    node.position({ x: newX, y: newY });
+                    setStagePos({ x: newX, y: newY });
+                }}
+            >
+                <KonvaImage
+                    image={img}
+                    width={stageSize.width}
+                    height={stageSize.height}
+                    offsetX={centerX}
+                    offsetY={centerY}
+                    x={centerX}
+                    y={centerY}
+                    rotation={imageRotation}
+                    scaleX={imageScaleX}
+                    scaleY={imageScaleY}
+                />
+            </Group>
         </Group>
     );
 };

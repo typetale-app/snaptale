@@ -74,7 +74,7 @@ const AngleSlider = ({
     const currentOffset = ((value - min) / step) * tickWidth;
 
     return (
-        <div className="w-full max-w-xl mx-auto p-10 select-none">
+        <div className="w-full max-w-xl mx-auto select-none">
             <div
                 ref={containerRef}
                 className="relative w-full h-24 overflow-hidden cursor-ew-resize touch-none"
