@@ -94,7 +94,6 @@ export const CropTool: React.FC = () => {
                 ref={trRef}
                 rotateEnabled={false}
                 keepRatio={false}
-                enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right']}
                 anchorSize={14}
                 anchorCornerRadius={10}
                 anchorFill="#ffffff"
@@ -133,7 +132,7 @@ export const CropTool: React.FC = () => {
                     if (width < 10 || height < 10) {
                         return oldBox;
                     }
-                    
+
                     return { x, y, width, height, rotation };
                 }}
             />
