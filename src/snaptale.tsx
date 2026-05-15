@@ -1,10 +1,6 @@
-import React, { StrictMode } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { App } from "./editor/page";
-
-if (typeof window !== "undefined") {
-  (window as any).React = React;
-}
+import Editor from "./editor/page";
 
 /**
  * Initializes and mounts the React application.
@@ -23,7 +19,7 @@ export function init() {
   const root = createRoot(elem);
   root.render(
     <StrictMode>
-      <App />
+      <Editor />
     </StrictMode>
   );
 

@@ -7,7 +7,7 @@
     "dev": "bun --hot src/index.ts",
     "start": "NODE_ENV=production bun src/index.ts",
     "build": "bun run build.ts",
-    "build:umd": "bun run build.ts --entrypoints=src/app.tsx --format=iife --name=pintura --outdir=dist/umd --no-splitting"
+    "build:umd": "bun run build.ts --entrypoints=src/snaptale.tsx --format=iife --name=snaptale --outdir=dist/umd --no-splitting"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",
