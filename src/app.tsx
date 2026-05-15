@@ -1,6 +1,10 @@
-import { StrictMode } from "react";
+import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./editor/page";
+
+if (typeof window !== "undefined") {
+  (window as any).React = React;
+}
 
 /**
  * Initializes and mounts the React application.
