@@ -4,7 +4,7 @@ import useImage from 'use-image';
 import { useEditor } from '../context/EditorContext';
 
 export const ImageLayer: React.FC = () => {
-    const { imageUrl, stageSize, setStageSize, setBaseScale, setCrop } = useEditor();
+    const { imageUrl, stageSize, setStageSize, setBaseScale, setCrop, imageRotation, imageScaleX, imageScaleY } = useEditor();
     const [img] = useImage(imageUrl, 'anonymous');
 
     useEffect(() => {
@@ -31,6 +31,9 @@ export const ImageLayer: React.FC = () => {
 
     if (!img) return null;
 
+    const centerX = stageSize.width / 2;
+    const centerY = stageSize.height / 2;
+
     return (
         <Group>
             {/* Background Image (darkened) */}
@@ -39,6 +42,13 @@ export const ImageLayer: React.FC = () => {
                 width={stageSize.width}
                 height={stageSize.height}
                 opacity={0.4}
+                offsetX={centerX}
+                offsetY={centerY}
+                x={centerX}
+                y={centerY}
+                rotation={imageRotation}
+                scaleX={imageScaleX}
+                scaleY={imageScaleY}
             />
         </Group>
     );

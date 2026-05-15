@@ -34,6 +34,14 @@ interface EditorState {
     // Crop Tool State
     crop: CropConfig;
     setCrop: (crop: CropConfig | ((c: CropConfig) => CropConfig)) => void;
+
+    // Image Transforms
+    imageRotation: number;
+    setImageRotation: (rot: number | ((r: number) => number)) => void;
+    imageScaleX: number;
+    setImageScaleX: (sx: number | ((s: number) => number)) => void;
+    imageScaleY: number;
+    setImageScaleY: (sy: number | ((s: number) => number)) => void;
 }
 
 const EditorContext = createContext<EditorState | undefined>(undefined);
@@ -46,6 +54,10 @@ export const EditorProvider: React.FC<{ imageUrl: string; children: ReactNode }>
     const [activeTool, setActiveTool] = useState<ToolType>('crop');
     const [crop, setCrop] = useState<CropConfig>({ x: 50, y: 50, width: 200, height: 200 });
 
+    const [imageRotation, setImageRotation] = useState<number>(0);
+    const [imageScaleX, setImageScaleX] = useState<number>(1);
+    const [imageScaleY, setImageScaleY] = useState<number>(1);
+
     const value: EditorState = {
         imageUrl,
         stageSize, setStageSize,
@@ -54,6 +66,9 @@ export const EditorProvider: React.FC<{ imageUrl: string; children: ReactNode }>
         stagePos, setStagePos,
         activeTool, setActiveTool,
         crop, setCrop,
+        imageRotation, setImageRotation,
+        imageScaleX, setImageScaleX,
+        imageScaleY, setImageScaleY,
     };
 
     return <EditorContext.Provider value={value}>{children}</EditorContext.Provider>;

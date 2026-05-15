@@ -47,7 +47,7 @@ export const EditorCanvas: React.FC = () => {
     }, [zoom, stageSize, setStagePos]);
 
     return (
-        <div className="relative group overflow-hidden bg-black shadow-inner">
+        <div className="relative group overflow-hidden w-full h-full flex items-center justify-center">
             <Stage
                 width={stageSize.width}
                 height={stageSize.height}

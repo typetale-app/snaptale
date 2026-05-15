@@ -5,7 +5,7 @@ import Konva from 'konva';
 import { useEditor } from '../context/EditorContext';
 
 export const CropTool: React.FC = () => {
-    const { imageUrl, stageSize, crop, setCrop, zoom, activeTool } = useEditor();
+    const { imageUrl, stageSize, crop, setCrop, zoom, activeTool, imageRotation, imageScaleX, imageScaleY } = useEditor();
     const [img] = useImage(imageUrl, 'anonymous');
 
     const cropRef = useRef<Konva.Rect>(null);
@@ -21,6 +21,9 @@ export const CropTool: React.FC = () => {
 
     if (activeTool !== 'crop' || !img) return null;
 
+    const centerX = stageSize.width / 2;
+    const centerY = stageSize.height / 2;
+
     return (
         <Group>
             {/* Crop Preview (clipped high-brightness image) */}
@@ -31,6 +34,13 @@ export const CropTool: React.FC = () => {
                     image={img}
                     width={stageSize.width}
                     height={stageSize.height}
+                    offsetX={centerX}
+                    offsetY={centerY}
+                    x={centerX}
+                    y={centerY}
+                    rotation={imageRotation}
+                    scaleX={imageScaleX}
+                    scaleY={imageScaleY}
                 />
             </Group>
 
@@ -41,8 +51,8 @@ export const CropTool: React.FC = () => {
                 y={crop.y}
                 width={crop.width}
                 height={crop.height}
-                stroke="#3b82f6"
-                strokeWidth={2} // Keep stroke thin even when zoomed
+                stroke="#ffffff"
+                strokeWidth={1} // Keep stroke thin even when zoomed
                 draggable
                 onDragMove={(e) => {
                     const node = e.target;
@@ -81,10 +91,14 @@ export const CropTool: React.FC = () => {
                 ref={trRef}
                 rotateEnabled={false}
                 keepRatio={false}
-                enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right', 'top-center', 'bottom-center']}
-                anchorSize={8}
-                anchorCornerRadius={2}
+                enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right']}
+                anchorSize={20}
+                anchorCornerRadius={10}
                 anchorFill="#ffffff"
+                anchorStroke="#ffffff"
+                anchorStrokeWidth={0}
+                borderStroke="#ffffff"
+                borderStrokeWidth={1}
                 boundBoxFunc={(oldBox, newBox) => {
                     // Prevent going out of bounds
                     const isOutOfBounds =
