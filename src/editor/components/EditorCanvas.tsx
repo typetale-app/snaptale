@@ -24,7 +24,7 @@ export const EditorCanvas: React.FC = () => {
             y: (pointer.y - stagePos.y) / oldScale,
         };
 
-        const speed = 1.1;
+        const speed = 1.03;
         const newScale = e.evt.deltaY > 0 ? oldScale / speed : oldScale * speed;
 
         // Limit zoom range

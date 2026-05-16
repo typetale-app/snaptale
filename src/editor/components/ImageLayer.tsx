@@ -21,9 +21,11 @@ export const ImageLayer: React.FC = () => {
     setZoom,
     stagePos,
     setStagePos,
+    filters,
   } = useEditor();
   const [img] = useImage(imageUrl, "anonymous");
   const imageGroupRef = useRef<Konva.Group>(null);
+  const imageRef = useRef<Konva.Image>(null);
 
   useLayoutEffect(() => {
     if (!imageGroupRef.current || !img || !crop) return;
@@ -117,6 +119,35 @@ export const ImageLayer: React.FC = () => {
     }
   }, [img, setStageSize, setImageSize, setBaseScale, setCrop]);
 
+  // Apply Filters
+  useEffect(() => {
+    if (imageRef.current) {
+      if (
+        filters.preset === "none" &&
+        filters.brightness === 0 &&
+        filters.contrast === 0 &&
+        filters.saturation === 0 &&
+        filters.blur === 0
+      ) {
+        imageRef.current.clearCache();
+        imageRef.current.filters([]);
+      } else {
+        const activeFilters = [];
+        
+        if (filters.preset === "grayscale") activeFilters.push(Konva.Filters.Grayscale);
+        if (filters.preset === "sepia") activeFilters.push(Konva.Filters.Sepia);
+        
+        if (filters.brightness !== 0) activeFilters.push(Konva.Filters.Brighten);
+        if (filters.contrast !== 0) activeFilters.push(Konva.Filters.Contrast);
+        if (filters.saturation !== 0) activeFilters.push(Konva.Filters.HSL);
+        if (filters.blur > 0) activeFilters.push(Konva.Filters.Blur);
+
+        imageRef.current.filters(activeFilters);
+        imageRef.current.cache();
+      }
+    }
+  }, [filters, imageSize]); // Re-cache if size changes
+
   if (!img) return null;
 
   // Use imageSize (not stageSize) so the image doesn't squeeze after crop commits
@@ -156,6 +187,7 @@ export const ImageLayer: React.FC = () => {
         }}
       >
         <KonvaImage
+          ref={imageRef}
           image={img}
           width={imageSize.width}
           height={imageSize.height}
@@ -166,6 +198,11 @@ export const ImageLayer: React.FC = () => {
           rotation={imageRotation}
           scaleX={imageScaleX}
           scaleY={imageScaleY}
+          brightness={filters.brightness}
+          contrast={filters.contrast}
+          luminance={filters.saturation} // Using luminance for saturation as simple workaround or hue
+          saturation={filters.saturation}
+          blurRadius={filters.blur}
         />
       </Group>
     </Group>

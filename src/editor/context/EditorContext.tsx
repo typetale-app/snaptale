@@ -47,6 +47,14 @@ export interface TextConfig {
   letterSpacing: number;
 }
 
+export interface FilterConfig {
+  preset: string; // 'none', 'grayscale', 'sepia', 'vintage', 'warm', 'cool'
+  brightness: number; // -1 to 1
+  contrast: number; // -100 to 100
+  saturation: number; // -1 to 1 (using HSL)
+  blur: number; // 0 to 40
+}
+
 export interface StageSize {
   width: number;
   height: number;
@@ -82,7 +90,10 @@ interface EditorState {
   imageScaleX: number;
   setImageScaleX: (sx: number | ((s: number) => number)) => void;
   imageScaleY: number;
-  setImageScaleY: (sy: number | ((s: number) => number)) => void;
+  setImageScaleY: React.Dispatch<React.SetStateAction<number>>;
+
+  filters: FilterConfig;
+  setFilters: React.Dispatch<React.SetStateAction<FilterConfig>>;
 
   // Text Tool State
   texts: TextConfig[];
@@ -91,6 +102,7 @@ interface EditorState {
   addText: (text?: Partial<TextConfig>) => string;
   updateText: (id: string, updates: Partial<TextConfig>) => void;
   deleteText: (id: string) => void;
+  clearAllTexts: () => void;
 
   /**
    * Commits the current crop: resizes the Stage canvas to the crop rect and
@@ -133,6 +145,15 @@ export const EditorProvider: React.FC<{
   const [imageRotation, setImageRotation] = useState<number>(0);
   const [imageScaleX, setImageScaleX] = useState<number>(1);
   const [imageScaleY, setImageScaleY] = useState<number>(1);
+
+  // Filters state
+  const [filters, setFilters] = useState<FilterConfig>({
+    preset: "none",
+    brightness: 0,
+    contrast: 0,
+    saturation: 0,
+    blur: 0,
+  });
 
   // Text tool state
   const [texts, setTexts] = useState<TextConfig[]>([]);
@@ -177,6 +198,11 @@ export const EditorProvider: React.FC<{
   const deleteText = useCallback((id: string) => {
     setTexts((prev) => prev.filter((t) => t.id !== id));
     setSelectedTextId((prev) => (prev === id ? null : prev));
+  }, []);
+
+  const clearAllTexts = useCallback(() => {
+    setTexts([]);
+    setSelectedTextId(null);
   }, []);
 
   // Saved crop-mode viewport so we can restore it when re-entering crop.
@@ -255,12 +281,15 @@ export const EditorProvider: React.FC<{
     setImageScaleX,
     imageScaleY,
     setImageScaleY,
+    filters,
+    setFilters,
     texts,
     selectedTextId,
     setSelectedTextId,
     addText,
     updateText,
     deleteText,
+    clearAllTexts,
     applyCrop,
     restoreCropView,
   };

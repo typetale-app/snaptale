@@ -1,0 +1,232 @@
+import React, { useState, useRef, useEffect, useCallback, type ReactNode } from "react";
+import { ChevronLeft } from "lucide-react";
+
+export interface ToolbarPage {
+  id: string;
+  label: string;
+  content: ReactNode;
+}
+
+interface BottomToolbarProps {
+  visible: boolean;
+  pages: ToolbarPage[];
+  /** Called when the user navigates to a sub-page from the main page */
+  onPageChange?: (pageId: string) => void;
+}
+
+/**
+ * A generic animated bottom toolbar with page-stack navigation.
+ *
+ * - Slides up from the bottom when `visible` becomes true.
+ * - The first page in `pages` is the "main" page.
+ * - Sub-pages can be pushed via `navigateTo(pageId)`, which slides
+ *   the content horizontally to the right. A back button appears
+ *   to return to the main page.
+ *
+ * Each tool provides its own `pages` array.
+ */
+export const BottomToolbar: React.FC<BottomToolbarProps> = ({
+  visible,
+  pages,
+  onPageChange,
+}) => {
+  const [activePageIndex, setActivePageIndex] = useState(0);
+  const [direction, setDirection] = useState<"forward" | "back">("forward");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Reset to main page when toolbar becomes hidden
+  useEffect(() => {
+    if (!visible) {
+      // Small delay so the exit animation completes before resetting
+      const timer = setTimeout(() => setActivePageIndex(0), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
+
+  const navigateTo = useCallback(
+    (pageId: string) => {
+      const idx = pages.findIndex((p) => p.id === pageId);
+      if (idx !== -1) {
+        setDirection("forward");
+        setActivePageIndex(idx);
+        onPageChange?.(pageId);
+      }
+    },
+    [pages, onPageChange]
+  );
+
+  const goBack = useCallback(() => {
+    setDirection("back");
+    setActivePageIndex(0);
+    onPageChange?.(pages[0]?.id ?? "main");
+  }, [pages, onPageChange]);
+
+  const activePage = pages[activePageIndex];
+  const isSubPage = activePageIndex > 0;
+
+  return (
+    <div
+      className={`flex justify-center transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        visible
+          ? "opacity-100 translate-y-0 pb-4"
+          : "opacity-0 translate-y-6 pointer-events-none h-0 overflow-hidden"
+      }`}
+    >
+      <div
+        ref={containerRef}
+        className="bg-zinc-900 rounded-xl border border-zinc-800 shadow-lg shadow-black/20 px-4"
+      >
+        {/* Page content with horizontal slide animation */}
+        <div className="relative overflow-hidden">
+          {pages.map((page, index) => (
+            <div
+              key={page.id}
+              className={`transition-all duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                index === activePageIndex
+                  ? "relative opacity-100 translate-x-0"
+                  : "absolute inset-0 opacity-0 pointer-events-none " +
+                    (index > activePageIndex
+                      ? "translate-x-8"
+                      : "-translate-x-8")
+              }`}
+            >
+              <div className="flex items-center h-12 gap-3">
+                {/* Back button for sub-pages */}
+                {index > 0 && index === activePageIndex && (
+                  <button
+                    onClick={goBack}
+                    className="flex items-center gap-1 text-zinc-400 hover:text-white transition-colors shrink-0 -ml-1 pr-2"
+                  >
+                    <ChevronLeft size={16} />
+                    <span className="text-[11px] font-medium uppercase tracking-wider">
+                      {pages[0]?.label ?? "Back"}
+                    </span>
+                  </button>
+                )}
+
+                {/* Sub-page title */}
+                {index > 0 && index === activePageIndex && (
+                  <>
+                    <div className="w-px h-5 bg-zinc-800" />
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-300 shrink-0">
+                      {page.label}
+                    </span>
+                    <div className="w-px h-5 bg-zinc-800" />
+                  </>
+                )}
+
+                {/* Page content */}
+                <div className="flex-1 flex items-center min-w-0">
+                  {page.content}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Helper context to let tool content navigate to sub-pages.
+ */
+export const ToolbarNavContext = React.createContext<{
+  navigateTo: (pageId: string) => void;
+  goBack: () => void;
+}>({
+  navigateTo: () => {},
+  goBack: () => {},
+});
+
+export const useToolbarNav = () => React.useContext(ToolbarNavContext);
+
+/**
+ * A wrapper that provides the nav context to tool content within BottomToolbar.
+ */
+export const BottomToolbarWithNav: React.FC<BottomToolbarProps> = (props) => {
+  const [activePageIndex, setActivePageIndex] = useState(0);
+  const { visible, pages } = props;
+
+  useEffect(() => {
+    if (!visible) {
+      const timer = setTimeout(() => setActivePageIndex(0), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
+
+  const navigateTo = useCallback(
+    (pageId: string) => {
+      const idx = pages.findIndex((p) => p.id === pageId);
+      if (idx !== -1) setActivePageIndex(idx);
+    },
+    [pages]
+  );
+
+  const goBack = useCallback(() => {
+    setActivePageIndex(0);
+  }, []);
+
+  const activePage = pages[activePageIndex];
+
+  return (
+    <ToolbarNavContext.Provider value={{ navigateTo, goBack }}>
+      <div
+        className={`flex justify-center transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          visible
+            ? "opacity-100 translate-y-0 pb-4"
+            : "opacity-0 translate-y-6 pointer-events-none h-0 overflow-hidden"
+        }`}
+      >
+        <div className="bg-zinc-900 rounded-xl border border-zinc-800 shadow-lg shadow-black/20 px-4">
+          <div className="relative overflow-hidden">
+            {pages.map((page, index) => (
+              <div
+                key={page.id}
+                className={`transition-all duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  index === activePageIndex
+                    ? "relative opacity-100 translate-x-0"
+                    : "absolute inset-0 opacity-0 pointer-events-none " +
+                      (index > activePageIndex
+                        ? "translate-x-8"
+                        : "-translate-x-8")
+                }`}
+              >
+                <div className="flex items-center h-12 gap-3">
+                  {/* Back button for sub-pages */}
+                  {index > 0 && index === activePageIndex && (
+                    <button
+                      onClick={goBack}
+                      className="flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors shrink-0 -ml-1 pr-2"
+                    >
+                      <ChevronLeft size={16} />
+                      <span className="text-[11px] font-medium uppercase tracking-wider">
+                        Back
+                      </span>
+                    </button>
+                  )}
+
+                  {/* Sub-page title */}
+                  {index > 0 && index === activePageIndex && (
+                    <>
+                      <div className="w-px h-5 bg-zinc-800" />
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-300 shrink-0">
+                        {page.label}
+                      </span>
+                      <div className="w-px h-5 bg-zinc-800" />
+                    </>
+                  )}
+
+                  {/* Page content */}
+                  <div className="flex-1 flex items-center min-w-0">
+                    {page.content}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </ToolbarNavContext.Provider>
+  );
+};
