@@ -1,137 +1,173 @@
-import React, { useEffect, useLayoutEffect, useRef } from 'react';
-import { Group, Image as KonvaImage } from 'react-konva';
-import Konva from 'konva';
-import useImage from 'use-image';
-import { useEditor } from '../context/EditorContext';
+import React, { useEffect, useLayoutEffect, useRef } from "react";
+import { Group, Image as KonvaImage } from "react-konva";
+import Konva from "konva";
+import useImage from "use-image";
+import { useEditor } from "../context/EditorContext";
 
 export const ImageLayer: React.FC = () => {
-    const { imageUrl, stageSize, setStageSize, setBaseScale, setCrop, crop, imageRotation, imageScaleX, imageScaleY, zoom, setZoom, stagePos, setStagePos } = useEditor();
-    const [img] = useImage(imageUrl, 'anonymous');
-    const imageGroupRef = useRef<Konva.Group>(null);
+  const {
+    imageUrl,
+    stageSize,
+    setStageSize,
+    imageSize,
+    setImageSize,
+    setBaseScale,
+    setCrop,
+    crop,
+    imageRotation,
+    imageScaleX,
+    imageScaleY,
+    zoom,
+    setZoom,
+    stagePos,
+    setStagePos,
+  } = useEditor();
+  const [img] = useImage(imageUrl, "anonymous");
+  const imageGroupRef = useRef<Konva.Group>(null);
 
-    useLayoutEffect(() => {
-        if (!imageGroupRef.current || !img || !crop) return;
-        const node = imageGroupRef.current;
-        const imageRect = node.getClientRect();
-        
-        if (imageRect.width === 0 || imageRect.height === 0) return;
+  useLayoutEffect(() => {
+    if (!imageGroupRef.current || !img || !crop) return;
+    const node = imageGroupRef.current;
+    const imageRect = node.getClientRect();
 
-        let newX = stagePos.x;
-        let newY = stagePos.y;
-        let newZoom = zoom;
-        let needsUpdate = false;
+    if (imageRect.width === 0 || imageRect.height === 0) return;
 
-        const scaleToFixWidth = crop.width / imageRect.width;
-        const scaleToFixHeight = crop.height / imageRect.height;
-        
-        if (scaleToFixWidth > 1 || scaleToFixHeight > 1) {
-            const requiredExtraScale = Math.max(scaleToFixWidth, scaleToFixHeight);
-            newZoom = zoom * requiredExtraScale;
-            needsUpdate = true;
-            
-            imageRect.width *= requiredExtraScale;
-            imageRect.height *= requiredExtraScale;
-            imageRect.x = stagePos.x + (imageRect.x - stagePos.x) * requiredExtraScale;
-            imageRect.y = stagePos.y + (imageRect.y - stagePos.y) * requiredExtraScale;
-        }
+    let newX = stagePos.x;
+    let newY = stagePos.y;
+    let newZoom = zoom;
+    let needsUpdate = false;
 
-        if (imageRect.width >= crop.width) {
-            if (imageRect.x > crop.x) {
-                newX -= (imageRect.x - crop.x);
-                needsUpdate = true;
-            } else if (imageRect.x + imageRect.width < crop.x + crop.width) {
-                newX += (crop.x + crop.width) - (imageRect.x + imageRect.width);
-                needsUpdate = true;
-            }
-        }
-        if (imageRect.height >= crop.height) {
-            if (imageRect.y > crop.y) {
-                newY -= (imageRect.y - crop.y);
-                needsUpdate = true;
-            } else if (imageRect.y + imageRect.height < crop.y + crop.height) {
-                newY += (crop.y + crop.height) - (imageRect.y + imageRect.height);
-                needsUpdate = true;
-            }
-        }
+    const scaleToFixWidth = crop.width / imageRect.width;
+    const scaleToFixHeight = crop.height / imageRect.height;
 
-        if (needsUpdate) {
-            if (Math.abs(newZoom - zoom) > 0.001 || Math.abs(newX - stagePos.x) > 0.5 || Math.abs(newY - stagePos.y) > 0.5) {
-                setZoom(newZoom);
-                setStagePos({ x: newX, y: newY });
-            }
-        }
-    }, [zoom, stagePos, crop, img, imageRotation, imageScaleX, imageScaleY, setZoom, setStagePos]);
+    if (scaleToFixWidth > 1 || scaleToFixHeight > 1) {
+      const requiredExtraScale = Math.max(scaleToFixWidth, scaleToFixHeight);
+      newZoom = zoom * requiredExtraScale;
+      needsUpdate = true;
 
-    useEffect(() => {
-        if (img) {
-            const maxWidth = window.innerWidth * 0.8;
-            const maxHeight = window.innerHeight * 0.7;
+      imageRect.width *= requiredExtraScale;
+      imageRect.height *= requiredExtraScale;
+      imageRect.x =
+        stagePos.x + (imageRect.x - stagePos.x) * requiredExtraScale;
+      imageRect.y =
+        stagePos.y + (imageRect.y - stagePos.y) * requiredExtraScale;
+    }
 
-            const ratio = Math.min(maxWidth / img.width, maxHeight / img.height, 1);
+    if (imageRect.width >= crop.width) {
+      if (imageRect.x > crop.x) {
+        newX -= imageRect.x - crop.x;
+        needsUpdate = true;
+      } else if (imageRect.x + imageRect.width < crop.x + crop.width) {
+        newX += crop.x + crop.width - (imageRect.x + imageRect.width);
+        needsUpdate = true;
+      }
+    }
+    if (imageRect.height >= crop.height) {
+      if (imageRect.y > crop.y) {
+        newY -= imageRect.y - crop.y;
+        needsUpdate = true;
+      } else if (imageRect.y + imageRect.height < crop.y + crop.height) {
+        newY += crop.y + crop.height - (imageRect.y + imageRect.height);
+        needsUpdate = true;
+      }
+    }
 
-            setBaseScale(ratio);
-            const w = img.width * ratio;
-            const h = img.height * ratio;
-            setStageSize({ width: w, height: h });
-            
-            // Center crop box initially
-            setCrop({
-                x: w * 0.1,
-                y: h * 0.1,
-                width: w * 0.8,
-                height: h * 0.8,
-            });
-        }
-    }, [img, setStageSize, setBaseScale, setCrop]);
+    if (needsUpdate) {
+      if (
+        Math.abs(newZoom - zoom) > 0.001 ||
+        Math.abs(newX - stagePos.x) > 0.5 ||
+        Math.abs(newY - stagePos.y) > 0.5
+      ) {
+        setZoom(newZoom);
+        setStagePos({ x: newX, y: newY });
+      }
+    }
+  }, [
+    zoom,
+    stagePos,
+    crop,
+    img,
+    imageRotation,
+    imageScaleX,
+    imageScaleY,
+    setZoom,
+    setStagePos,
+  ]);
 
-    if (!img) return null;
+  useEffect(() => {
+    if (img) {
+      const maxWidth = window.innerWidth * 0.8;
+      const maxHeight = window.innerHeight * 0.7;
 
-    const centerX = stageSize.width / 2;
-    const centerY = stageSize.height / 2;
+      const ratio = Math.min(maxWidth / img.width, maxHeight / img.height, 1);
 
-    return (
-        <Group>
-            {/* Background Image (darkened) */}
-            <Group 
-                name="image-group"
-                ref={imageGroupRef}
-                x={stagePos.x} 
-                y={stagePos.y} 
-                scaleX={zoom} 
-                scaleY={zoom}
-                draggable={true}
-                onDragMove={(e) => {
-                    const node = e.target;
-                    let newX = node.x();
-                    let newY = node.y();
-                    const imageRect = node.getClientRect();
+      setBaseScale(ratio);
+      const w = img.width * ratio;
+      const h = img.height * ratio;
+      setStageSize({ width: w, height: h });
+      setImageSize({ width: w, height: h });
 
-                    if (imageRect.width >= crop.width) {
-                        if (imageRect.x > crop.x) newX -= (imageRect.x - crop.x);
-                        else if (imageRect.x + imageRect.width < crop.x + crop.width) newX += (crop.x + crop.width) - (imageRect.x + imageRect.width);
-                    }
-                    if (imageRect.height >= crop.height) {
-                        if (imageRect.y > crop.y) newY -= (imageRect.y - crop.y);
-                        else if (imageRect.y + imageRect.height < crop.y + crop.height) newY += (crop.y + crop.height) - (imageRect.y + imageRect.height);
-                    }
-                    
-                    node.position({ x: newX, y: newY });
-                    setStagePos({ x: newX, y: newY });
-                }}
-            >
-                <KonvaImage
-                    image={img}
-                    width={stageSize.width}
-                    height={stageSize.height}
-                    offsetX={centerX}
-                    offsetY={centerY}
-                    x={centerX}
-                    y={centerY}
-                    rotation={imageRotation}
-                    scaleX={imageScaleX}
-                    scaleY={imageScaleY}
-                />
-            </Group>
-        </Group>
-    );
+      // Center crop box initially
+      setCrop({
+        x: w * 0.1,
+        y: h * 0.1,
+        width: w * 0.8,
+        height: h * 0.8,
+      });
+    }
+  }, [img, setStageSize, setImageSize, setBaseScale, setCrop]);
+
+  if (!img) return null;
+
+  // Use imageSize (not stageSize) so the image doesn't squeeze after crop commits
+  const centerX = imageSize.width / 2;
+  const centerY = imageSize.height / 2;
+
+  return (
+    <Group>
+      {/* Background Image (darkened) */}
+      <Group
+        name="image-group"
+        ref={imageGroupRef}
+        x={stagePos.x}
+        y={stagePos.y}
+        scaleX={zoom}
+        scaleY={zoom}
+        draggable={true}
+        onDragMove={(e) => {
+          const node = e.target;
+          let newX = node.x();
+          let newY = node.y();
+          const imageRect = node.getClientRect();
+
+          if (imageRect.width >= crop.width) {
+            if (imageRect.x > crop.x) newX -= imageRect.x - crop.x;
+            else if (imageRect.x + imageRect.width < crop.x + crop.width)
+              newX += crop.x + crop.width - (imageRect.x + imageRect.width);
+          }
+          if (imageRect.height >= crop.height) {
+            if (imageRect.y > crop.y) newY -= imageRect.y - crop.y;
+            else if (imageRect.y + imageRect.height < crop.y + crop.height)
+              newY += crop.y + crop.height - (imageRect.y + imageRect.height);
+          }
+
+          node.position({ x: newX, y: newY });
+          setStagePos({ x: newX, y: newY });
+        }}
+      >
+        <KonvaImage
+          image={img}
+          width={imageSize.width}
+          height={imageSize.height}
+          offsetX={centerX}
+          offsetY={centerY}
+          x={centerX}
+          y={centerY}
+          rotation={imageRotation}
+          scaleX={imageScaleX}
+          scaleY={imageScaleY}
+        />
+      </Group>
+    </Group>
+  );
 };

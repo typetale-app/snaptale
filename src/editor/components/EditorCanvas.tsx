@@ -4,9 +4,10 @@ import Konva from 'konva';
 import { useEditor } from '../context/EditorContext';
 import { ImageLayer } from './ImageLayer';
 import { CropTool } from '../tools/CropTool';
+import { TextTool } from '../tools/TextTool';
 
 export const EditorCanvas: React.FC = () => {
-    const { stageSize, zoom, setZoom, stagePos, setStagePos } = useEditor();
+    const { stageSize, zoom, setZoom, stagePos, setStagePos, setSelectedTextId, activeTool } = useEditor();
     const stageRef = useRef<Konva.Stage>(null);
 
     const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
@@ -36,6 +37,13 @@ export const EditorCanvas: React.FC = () => {
         });
     };
 
+    // Deselect text when clicking on empty stage area
+    const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
+        if (e.target === e.target.getStage()) {
+            setSelectedTextId(null);
+        }
+    };
+
 
     return (
         <div className="relative group overflow-hidden w-full h-full flex items-center justify-center">
@@ -43,12 +51,14 @@ export const EditorCanvas: React.FC = () => {
                 width={stageSize.width}
                 height={stageSize.height}
                 onWheel={handleWheel}
+                onClick={handleStageClick}
+                onTap={handleStageClick}
                 ref={stageRef}
             >
                 <Layer>
                     <ImageLayer />
                     <CropTool />
-                    {/* Add other tools here based on activeTool context state later */}
+                    <TextTool />
                 </Layer>
             </Stage>
         </div>
