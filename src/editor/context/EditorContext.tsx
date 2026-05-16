@@ -47,6 +47,26 @@ export interface TextConfig {
   letterSpacing: number;
 }
 
+export interface SymbolConfig {
+  id: string;
+  type: "emoji" | "shape";
+  shapeType?: "rect" | "circle" | "triangle" | "star" | "arrow" | "line";
+  emoji?: string;
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  fill?: string;
+  stroke?: string;
+  strokeWidth?: number;
+  fontSize?: number;
+  rotation: number;
+  scaleX: number;
+  scaleY: number;
+  opacity: number;
+  keepRatio: boolean;
+}
+
 export interface FilterConfig {
   preset: string; // 'none', 'grayscale', 'sepia', 'vintage', 'warm', 'cool'
   brightness: number; // -1 to 1
@@ -104,6 +124,17 @@ interface EditorState {
   deleteText: (id: string) => void;
   clearAllTexts: () => void;
 
+  // Symbols Tool State
+  symbols: SymbolConfig[];
+  selectedSymbolId: string | null;
+  setSelectedSymbolId: (id: string | null) => void;
+  addSymbol: (
+    payload: { type: "emoji"; emoji: string } | { type: "shape"; shapeType: "rect" | "circle" | "triangle" | "star" | "arrow" | "line" }
+  ) => string;
+  updateSymbol: (id: string, updates: Partial<SymbolConfig>) => void;
+  deleteSymbol: (id: string) => void;
+  clearAllSymbols: () => void;
+
   /**
    * Commits the current crop: resizes the Stage canvas to the crop rect and
    * shifts stagePos so the crop's top-left aligns with canvas (0, 0).
@@ -155,9 +186,12 @@ export const EditorProvider: React.FC<{
     blur: 0,
   });
 
-  // Text tool state
   const [texts, setTexts] = useState<TextConfig[]>([]);
   const [selectedTextId, setSelectedTextId] = useState<string | null>(null);
+
+  // Symbols tool state
+  const [symbols, setSymbols] = useState<SymbolConfig[]>([]);
+  const [selectedSymbolId, setSelectedSymbolId] = useState<string | null>(null);
 
   const addText = useCallback((overrides?: Partial<TextConfig>): string => {
     const id = `text-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -203,6 +237,67 @@ export const EditorProvider: React.FC<{
   const clearAllTexts = useCallback(() => {
     setTexts([]);
     setSelectedTextId(null);
+  }, []);
+
+  const addSymbol = useCallback(
+    (
+      payload:
+        | { type: "emoji"; emoji: string }
+        | { type: "shape"; shapeType: "rect" | "circle" | "triangle" | "star" | "arrow" | "line" }
+    ): string => {
+      const id = `symbol-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      
+      const baseProps = {
+        id,
+        type: payload.type,
+        x: stageSize.width / 2 - 40,
+        y: stageSize.height / 2 - 40,
+        rotation: 0,
+        scaleX: 1,
+        scaleY: 1,
+        opacity: 1,
+        keepRatio: true,
+      };
+
+      let newSymbol: SymbolConfig;
+
+      if (payload.type === "emoji") {
+        newSymbol = {
+          ...baseProps,
+          emoji: payload.emoji,
+          fontSize: 80,
+        };
+      } else {
+        newSymbol = {
+          ...baseProps,
+          shapeType: payload.shapeType,
+          width: 80,
+          height: 80,
+          fill: "#ffffff",
+        };
+      }
+
+      setSymbols((prev) => [...prev, newSymbol]);
+      setSelectedSymbolId(id);
+      return id;
+    },
+    [stageSize]
+  );
+
+  const updateSymbol = useCallback((id: string, updates: Partial<SymbolConfig>) => {
+    setSymbols((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, ...updates } : s))
+    );
+  }, []);
+
+  const deleteSymbol = useCallback((id: string) => {
+    setSymbols((prev) => prev.filter((s) => s.id !== id));
+    setSelectedSymbolId((prev) => (prev === id ? null : prev));
+  }, []);
+
+  const clearAllSymbols = useCallback(() => {
+    setSymbols([]);
+    setSelectedSymbolId(null);
   }, []);
 
   // Saved crop-mode viewport so we can restore it when re-entering crop.
@@ -290,6 +385,13 @@ export const EditorProvider: React.FC<{
     updateText,
     deleteText,
     clearAllTexts,
+    symbols,
+    selectedSymbolId,
+    setSelectedSymbolId,
+    addSymbol,
+    updateSymbol,
+    deleteSymbol,
+    clearAllSymbols,
     applyCrop,
     restoreCropView,
   };

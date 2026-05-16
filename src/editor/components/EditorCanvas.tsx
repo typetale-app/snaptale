@@ -5,9 +5,10 @@ import { useEditor } from '../context/EditorContext';
 import { ImageLayer } from './ImageLayer';
 import { CropTool } from '../tools/CropTool';
 import { TextTool } from '../tools/TextTool';
+import { SymbolsTool } from '../tools/SymbolsTool';
 
 export const EditorCanvas: React.FC = () => {
-    const { stageSize, zoom, setZoom, stagePos, setStagePos, setSelectedTextId, activeTool } = useEditor();
+    const { stageSize, zoom, setZoom, stagePos, setStagePos, setSelectedTextId, activeTool, setSelectedSymbolId } = useEditor();
     const stageRef = useRef<Konva.Stage>(null);
 
     const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
@@ -41,6 +42,7 @@ export const EditorCanvas: React.FC = () => {
     const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
         if (e.target === e.target.getStage()) {
             setSelectedTextId(null);
+            if (activeTool === 'symbols') setSelectedSymbolId(null);
         }
     };
 
@@ -59,6 +61,7 @@ export const EditorCanvas: React.FC = () => {
                     <ImageLayer />
                     <CropTool />
                     <TextTool />
+                    <SymbolsTool />
                 </Layer>
             </Stage>
         </div>

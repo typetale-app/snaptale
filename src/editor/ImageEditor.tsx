@@ -10,6 +10,7 @@ interface ImageEditorProps {
 import { CropToolbar } from "./components/CropToolbar";
 import { FilterToolbar } from "./components/FilterToolbar";
 import { TextToolbar } from "./components/TextToolbar";
+import { SymbolsToolbar } from "./components/SymbolsToolbar";
 import { BottomToolbarWithNav, type ToolbarPage } from "./components/BottomToolbar";
 import { useEditor } from "./context/EditorContext";
 import {
@@ -73,22 +74,7 @@ const RotateToolbar: React.FC<{ visible: boolean }> = ({ visible }) => {
   return <BottomToolbarWithNav visible={visible} pages={pages} />;
 };
 
-const SymbolsToolbar: React.FC<{ visible: boolean }> = ({ visible }) => {
-  const pages: ToolbarPage[] = [
-    {
-      id: "main",
-      label: "Symbols",
-      content: (
-        <div className="flex items-center gap-3 w-full">
-          <span className="text-zinc-500 text-xs">
-            Symbols & stickers coming soon
-          </span>
-        </div>
-      ),
-    },
-  ];
-  return <BottomToolbarWithNav visible={visible} pages={pages} />;
-};
+
 
 /* ─── Main Content ─── */
 
