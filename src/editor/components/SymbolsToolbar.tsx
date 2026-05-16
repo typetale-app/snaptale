@@ -1,7 +1,19 @@
 import React, { useState } from "react";
 import { BottomToolbarWithNav, type ToolbarPage } from "./BottomToolbar";
 import { useEditor } from "../context/EditorContext";
-import { Trash2, Blend, SmilePlus, Square, Circle as CircleIcon, Triangle, Star as StarIcon, Lock, Unlock, ArrowRight, Minus } from "lucide-react";
+import {
+  Trash2,
+  Blend,
+  SmilePlus,
+  Square,
+  Circle as CircleIcon,
+  Triangle,
+  Star as StarIcon,
+  Lock,
+  Unlock,
+  ArrowRight,
+  Minus,
+} from "lucide-react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import type { EmojiClickData } from "emoji-picker-react";
 
@@ -61,7 +73,10 @@ const SymbolsMainContent: React.FC<{
               <div className="w-px h-4 bg-white/10" />
 
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full overflow-hidden border border-white/20 relative cursor-pointer" title="Fill Color">
+                <div
+                  className="w-5 h-5 rounded-full overflow-hidden border border-white/20 relative cursor-pointer"
+                  title="Fill Color"
+                >
                   <input
                     type="color"
                     value={selectedSymbol.fill || "#ffffff"}
@@ -71,20 +86,33 @@ const SymbolsMainContent: React.FC<{
                     className="absolute inset-0 w-[200%] h-[200%] -top-1/2 -left-1/2 cursor-pointer"
                   />
                 </div>
-                <div className="w-5 h-5 rounded-full overflow-hidden border-2 border-white/40 relative cursor-pointer flex items-center justify-center" title="Border Color">
-                  <div className="w-full h-full pointer-events-none absolute inset-0" style={{ backgroundColor: selectedSymbol.stroke || 'transparent' }} />
+                <div
+                  className="w-5 h-5 rounded-full overflow-hidden border-2 border-white/40 relative cursor-pointer flex items-center justify-center"
+                  title="Border Color"
+                >
+                  <div
+                    className="w-full h-full pointer-events-none absolute inset-0"
+                    style={{
+                      backgroundColor: selectedSymbol.stroke || "transparent",
+                    }}
+                  />
                   <input
                     type="color"
                     value={selectedSymbol.stroke || "#000000"}
                     onChange={(e) =>
-                      updateSymbol(selectedSymbol.id, { stroke: e.target.value })
+                      updateSymbol(selectedSymbol.id, {
+                        stroke: e.target.value,
+                      })
                     }
                     className="absolute inset-0 w-[200%] h-[200%] -top-1/2 -left-1/2 cursor-pointer opacity-0"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 group" title="Border Width">
+              <div
+                className="flex items-center gap-1.5 group"
+                title="Border Width"
+              >
                 <CircleIcon size={11} className="text-white/40" />
                 <input
                   type="range"
@@ -93,7 +121,9 @@ const SymbolsMainContent: React.FC<{
                   step={1}
                   value={selectedSymbol.strokeWidth || 0}
                   onChange={(e) =>
-                    updateSymbol(selectedSymbol.id, { strokeWidth: Number(e.target.value) })
+                    updateSymbol(selectedSymbol.id, {
+                      strokeWidth: Number(e.target.value),
+                    })
                   }
                   className="w-12 h-1 bg-white/10 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full cursor-pointer"
                 />
@@ -104,13 +134,27 @@ const SymbolsMainContent: React.FC<{
           <div className="w-px h-4 bg-white/10" />
 
           <button
-            onClick={() => updateSymbol(selectedSymbol.id, { keepRatio: !selectedSymbol.keepRatio })}
-            title={selectedSymbol.keepRatio ? "Unlock Aspect Ratio" : "Lock Aspect Ratio"}
+            onClick={() =>
+              updateSymbol(selectedSymbol.id, {
+                keepRatio: !selectedSymbol.keepRatio,
+              })
+            }
+            title={
+              selectedSymbol.keepRatio
+                ? "Unlock Aspect Ratio"
+                : "Lock Aspect Ratio"
+            }
             className={`w-7 h-7 rounded-xl flex items-center justify-center transition-colors ${
-              selectedSymbol.keepRatio ? "bg-white/20 text-white" : "text-white/40 hover:bg-white/10 hover:text-white"
+              selectedSymbol.keepRatio
+                ? "bg-white/20 text-white"
+                : "text-white/40 hover:bg-white/10 hover:text-white"
             }`}
           >
-            {selectedSymbol.keepRatio ? <Lock size={12} /> : <Unlock size={12} />}
+            {selectedSymbol.keepRatio ? (
+              <Lock size={12} />
+            ) : (
+              <Unlock size={12} />
+            )}
           </button>
         </div>
 
@@ -132,8 +176,8 @@ const SymbolsMainContent: React.FC<{
         <button
           onClick={() => setShowPicker(!showPicker)}
           className={`flex items-center gap-2 px-4 h-9 font-medium text-sm rounded-xl transition-all shadow-sm ${
-            showPicker 
-              ? "bg-white text-black hover:bg-white/90" 
+            showPicker
+              ? "bg-white text-black hover:bg-white/90"
               : "bg-white/10 text-white hover:bg-white/20"
           }`}
         >
@@ -192,9 +236,7 @@ const SymbolsMainContent: React.FC<{
   );
 };
 
-export const SymbolsToolbar: React.FC<{ visible: boolean }> = ({
-  visible,
-}) => {
+export const SymbolsToolbar: React.FC<{ visible: boolean }> = ({ visible }) => {
   const { addSymbol } = useEditor();
   const [showPicker, setShowPicker] = useState(false);
 
@@ -204,17 +246,22 @@ export const SymbolsToolbar: React.FC<{ visible: boolean }> = ({
   };
 
   const pages: ToolbarPage[] = [
-    { 
-      id: "main", 
-      label: "Stickers", 
-      content: <SymbolsMainContent showPicker={showPicker} setShowPicker={setShowPicker} /> 
+    {
+      id: "main",
+      label: "Stickers",
+      content: (
+        <SymbolsMainContent
+          showPicker={showPicker}
+          setShowPicker={setShowPicker}
+        />
+      ),
     },
   ];
 
   return (
     <>
       <BottomToolbarWithNav visible={visible} pages={pages} />
-      
+
       {visible && showPicker && (
         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-50 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
           <EmojiPicker

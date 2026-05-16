@@ -21,7 +21,6 @@
     "radix-ui": "^1.4.3",
     "react": "^19",
     "react-dom": "^19",
-    "react-filerobot-image-editor": "^5.0.0-beta.156",
     "react-konva": "^19.2.4",
     "tailwind-merge": "^3.3.1",
     "use-image": "^1.1.4"
