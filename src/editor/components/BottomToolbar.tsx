@@ -74,7 +74,7 @@ export const BottomToolbar: React.FC<BottomToolbarProps> = ({
     >
       <div
         ref={containerRef}
-        className="bg-zinc-900 rounded-xl border border-zinc-800 shadow-lg shadow-black/20 px-4"
+        className="bg-[#18181A]/85 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-4"
       >
         {/* Page content with horizontal slide animation */}
         <div className="relative overflow-hidden">
@@ -107,11 +107,11 @@ export const BottomToolbar: React.FC<BottomToolbarProps> = ({
                 {/* Sub-page title */}
                 {index > 0 && index === activePageIndex && (
                   <>
-                    <div className="w-px h-5 bg-zinc-800" />
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-300 shrink-0">
+                    <div className="w-[1px] h-4 bg-white/10" />
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-white/80 shrink-0">
                       {page.label}
                     </span>
-                    <div className="w-px h-5 bg-zinc-800" />
+                    <div className="w-[1px] h-4 bg-white/10" />
                   </>
                 )}
 
@@ -178,7 +178,7 @@ export const BottomToolbarWithNav: React.FC<BottomToolbarProps> = (props) => {
             : "opacity-0 translate-y-6 pointer-events-none h-0 overflow-hidden"
         }`}
       >
-        <div className="bg-zinc-900 rounded-xl border border-zinc-800 shadow-lg shadow-black/20 px-4">
+        <div className="bg-[#18181A]/85 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-4">
           <div className="relative overflow-hidden">
             {pages.map((page, index) => (
               <div
@@ -209,11 +209,11 @@ export const BottomToolbarWithNav: React.FC<BottomToolbarProps> = (props) => {
                   {/* Sub-page title */}
                   {index > 0 && index === activePageIndex && (
                     <>
-                      <div className="w-px h-5 bg-zinc-800" />
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-300 shrink-0">
+                      <div className="w-[1px] h-4 bg-white/10" />
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-white/80 shrink-0">
                         {page.label}
                       </span>
-                      <div className="w-px h-5 bg-zinc-800" />
+                      <div className="w-[1px] h-4 bg-white/10" />
                     </>
                   )}
 

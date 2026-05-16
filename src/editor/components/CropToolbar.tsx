@@ -1,6 +1,7 @@
 import React from "react";
 import {
   FlipHorizontal,
+  FlipVertical,
   RotateCcw,
   RotateCw,
   ChevronRight,
@@ -18,56 +19,69 @@ import {
 } from "./BottomToolbar";
 
 /* ─── Sub-option button (navigates to a sub-page) ─── */
-const SubOptionBtn: React.FC<{
+const CropOptionBtn: React.FC<{
   label: string;
   icon: React.ReactNode;
-  pageId: string;
   detail?: string;
-}> = ({ label, icon, pageId, detail }) => {
+  pageId: string;
+}> = ({ label, icon, detail, pageId }) => {
   const { navigateTo } = useToolbarNav();
   return (
     <button
       onClick={() => navigateTo(pageId)}
-      className="flex items-center gap-1.5 h-8 px-2.5 rounded-md transition-all text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60"
+      className="flex items-center gap-1.5 h-8 px-2.5 rounded-xl transition-all text-xs text-white/70 hover:text-white hover:bg-white/10"
     >
       {icon}
       <span className="font-medium">{label}</span>
       {detail && (
-        <span className="text-zinc-600 tabular-nums text-[10px]">{detail}</span>
+        <span className="text-white/50 tabular-nums text-[10px]">{detail}</span>
       )}
-      <ChevronRight size={11} className="text-zinc-600 ml-0.5" />
+      <ChevronRight size={11} className="text-white/40 ml-0.5" />
     </button>
   );
 };
 
 /* ─── Main crop controls ─── */
 const CropMainContent: React.FC = () => {
-  const { imageRotation, setImageRotation, setImageScaleX, zoom } = useEditor();
+  const { setImageRotation, setImageScaleX, setImageScaleY, zoom, imageRotation } = useEditor();
 
   return (
-    <div className="flex items-center gap-3 w-full">
-      {/* Rotate left 90° */}
+    <div className="flex items-center gap-2 w-full">
       <button
-        onClick={() => setImageRotation((prev: number) => prev - 90)}
+        onClick={() =>
+          setImageRotation(
+            (r: number) => Math.round((r - 90) / 90) * 90
+          )
+        }
         title="Rotate Left 90°"
-        className="w-8 h-8 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all"
+        className="flex items-center gap-2 px-3 h-8 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all text-xs font-medium"
       >
-        <ImageRotateIcon />
+        <RotateCcw size={14} />
+        <span>Rotate</span>
       </button>
 
-      {/* Flip horizontal */}
       <button
-        onClick={() => setImageScaleX((prev: number) => prev * -1)}
+        onClick={() => setImageScaleX((s: number) => s * -1)}
         title="Flip Horizontal"
-        className="w-8 h-8 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all"
+        className="flex items-center gap-2 px-3 h-8 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all text-xs font-medium"
       >
         <FlipHorizontal size={14} />
+        <span>Flip H</span>
       </button>
 
-      <div className="w-px h-5 bg-zinc-800" />
+      <button
+        onClick={() => setImageScaleY((s: number) => s * -1)}
+        title="Flip Vertical"
+        className="flex items-center gap-2 px-3 h-8 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all text-xs font-medium"
+      >
+        <FlipVertical size={14} />
+        <span>Flip V</span>
+      </button>
+
+      <div className="w-[1px] h-4 bg-white/10" />
 
       {/* Navigate to Straighten sub-page */}
-      <SubOptionBtn
+      <CropOptionBtn
         label="Straighten"
         icon={<RotateCw size={13} />}
         pageId="angle"
@@ -75,7 +89,7 @@ const CropMainContent: React.FC = () => {
       />
 
       {/* Navigate to Zoom sub-page */}
-      <SubOptionBtn
+      <CropOptionBtn
         label="Zoom"
         icon={<ZoomIn size={13} />}
         pageId="zoom"
@@ -88,6 +102,7 @@ const CropMainContent: React.FC = () => {
 /* ─── Straighten Sub-Page ─── */
 const CropAngleContent: React.FC = () => {
   const { imageRotation, setImageRotation } = useEditor();
+  const baseRotation = Math.floor(imageRotation / 90) * 90;
   const angle = imageRotation % 360;
 
   return (
@@ -95,7 +110,7 @@ const CropAngleContent: React.FC = () => {
       <button
         onClick={() => setImageRotation((r: number) => r - 1)}
         title="Rotate Left"
-        className="w-8 h-8 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all"
+        className="w-8 h-8 flex items-center justify-center rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all"
       >
         <RotateCcwSquare size={14} />
       </button>
@@ -107,10 +122,12 @@ const CropAngleContent: React.FC = () => {
           max={45}
           step={1}
           value={angle}
-          onChange={(e) => setImageRotation(Number(e.target.value))}
-          className="flex-1 h-1 bg-zinc-800 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-violet-400 [&::-webkit-slider-thumb]:rounded-full"
+          onChange={(e) =>
+            setImageRotation(baseRotation + Number(e.target.value))
+          }
+          className="flex-1 h-1 bg-white/10 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md cursor-pointer"
         />
-        <span className="text-xs text-zinc-400 tabular-nums w-10 text-right">
+        <span className="text-xs text-white/50 tabular-nums w-10 text-right">
           {angle}°
         </span>
       </div>
@@ -118,17 +135,17 @@ const CropAngleContent: React.FC = () => {
       <button
         onClick={() => setImageRotation((r: number) => r + 1)}
         title="Rotate Right"
-        className="w-8 h-8 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all"
+        className="w-8 h-8 flex items-center justify-center rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all"
       >
         <RotateCwSquare size={14} />
       </button>
 
-      <div className="w-px h-5 bg-zinc-800" />
+      <div className="w-[1px] h-4 bg-white/10" />
 
       <button
         onClick={() => setImageRotation(0)}
         title="Reset Angle"
-        className="w-8 h-8 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all"
+        className="w-8 h-8 flex items-center justify-center rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all"
       >
         <RotateCcw size={13} />
       </button>
@@ -140,17 +157,12 @@ const CropAngleContent: React.FC = () => {
 const CropZoomContent: React.FC = () => {
   const { zoom, setZoom, setStagePos } = useEditor();
 
-  const handleReset = () => {
-    setZoom(1);
-    setStagePos({ x: 0, y: 0 });
-  };
-
   return (
     <div className="flex items-center gap-4 w-full">
       <button
-        onClick={() => setZoom((z: number) => Math.max(0.5, z * 0.8))}
+        onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
         title="Zoom Out"
-        className="w-8 h-8 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all"
+        className="w-8 h-8 flex items-center justify-center rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all"
       >
         <ZoomOut size={14} />
       </button>
@@ -158,32 +170,35 @@ const CropZoomContent: React.FC = () => {
       <div className="flex-1 flex items-center gap-2">
         <input
           type="range"
-          min={50}
-          max={300}
-          step={1}
-          value={Math.round(zoom * 100)}
-          onChange={(e) => setZoom(Number(e.target.value) / 100)}
-          className="flex-1 h-1 bg-zinc-800 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-violet-400 [&::-webkit-slider-thumb]:rounded-full"
+          min={0.5}
+          max={3}
+          step={0.01}
+          value={zoom}
+          onChange={(e) => setZoom(Number(e.target.value))}
+          className="flex-1 h-1 bg-white/10 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md cursor-pointer"
         />
-        <span className="text-xs text-zinc-400 tabular-nums w-10 text-right">
-          {(zoom * 100).toFixed(0)}%
+        <span className="text-xs text-white/50 tabular-nums w-10 text-right">
+          {Math.round(zoom * 100)}%
         </span>
       </div>
 
       <button
-        onClick={() => setZoom((z: number) => Math.min(3, z * 1.2))}
+        onClick={() => setZoom(Math.min(3, zoom + 0.1))}
         title="Zoom In"
-        className="w-8 h-8 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all"
+        className="w-8 h-8 flex items-center justify-center rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all"
       >
         <ZoomIn size={14} />
       </button>
 
-      <div className="w-px h-5 bg-zinc-800" />
+      <div className="w-[1px] h-4 bg-white/10" />
 
       <button
-        onClick={handleReset}
+        onClick={() => {
+          setZoom(1);
+          setStagePos({ x: 0, y: 0 });
+        }}
         title="Reset Zoom"
-        className="w-8 h-8 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all"
+        className="w-8 h-8 flex items-center justify-center rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all"
       >
         <RotateCcw size={13} />
       </button>

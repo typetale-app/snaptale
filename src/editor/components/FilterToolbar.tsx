@@ -32,10 +32,10 @@ const FilterMainContent: React.FC = () => {
                 setFilters((f) => ({ ...f, preset: preset.id }))
               }
               className={cn(
-                "px-3 h-8 rounded-md text-xs font-medium transition-all",
+                "px-3 h-8 rounded-xl text-xs font-medium transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]",
                 isActive
-                  ? "bg-violet-600 text-white shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60"
+                  ? "bg-white text-black shadow-none"
+                  : "text-white/70 hover:text-white hover:bg-white/10 bg-white/5"
               )}
             >
               {preset.label}
@@ -44,18 +44,18 @@ const FilterMainContent: React.FC = () => {
         })}
       </div>
 
-      <div className="w-px h-5 bg-zinc-800" />
+      <div className="w-px h-4 bg-white/10" />
 
       {/* Navigate to Adjust sub-page */}
       <button
         onClick={() => navigateTo("adjust")}
-        className="flex items-center gap-1.5 h-8 px-2.5 ml-1 rounded-md transition-all text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60"
+        className="flex items-center gap-1.5 h-8 px-2.5 ml-1 rounded-xl transition-all text-xs text-white/70 hover:text-white hover:bg-white/10"
       >
         <SlidersHorizontal size={13} />
         <span className="font-medium">Adjust</span>
       </button>
 
-      <div className="w-px h-5 bg-zinc-800 mx-1" />
+      <div className="w-px h-4 bg-white/10 mx-1" />
 
       {/* Global Reset Filters */}
       <button
@@ -69,7 +69,7 @@ const FilterMainContent: React.FC = () => {
           })
         }
         title="Reset All Filters"
-        className="w-8 h-8 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all"
+        className="w-8 h-8 flex items-center justify-center rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all"
       >
         <RotateCcw size={13} />
       </button>
@@ -97,10 +97,10 @@ const FilterAdjustContent: React.FC = () => {
       {sliders.map((s) => (
         <div key={s.id} className="flex flex-col gap-1.5 w-24">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">
+            <span className="text-[10px] font-medium text-white/50 uppercase tracking-wider">
               {s.label}
             </span>
-            <span className="text-[10px] tabular-nums text-zinc-500">
+            <span className="text-[10px] tabular-nums text-white/50">
               {s.id === 'blur' ? s.value : Math.round(s.value * (s.id === 'brightness' ? 100 : 1))}
             </span>
           </div>
@@ -111,12 +111,12 @@ const FilterAdjustContent: React.FC = () => {
             step={s.step}
             value={s.value}
             onChange={(e) => updateFilter(s.id, Number(e.target.value))}
-            className="w-full h-1 bg-zinc-800 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:bg-violet-400 [&::-webkit-slider-thumb]:rounded-full cursor-pointer"
+            className="w-full h-1 bg-white/10 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md cursor-pointer"
           />
         </div>
       ))}
 
-      <div className="w-px h-5 bg-zinc-800 ml-2" />
+      <div className="w-px h-4 bg-white/10 ml-2" />
 
       <button
         onClick={() =>
@@ -129,7 +129,7 @@ const FilterAdjustContent: React.FC = () => {
           }))
         }
         title="Reset Adjustments"
-        className="w-8 h-8 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all"
+        className="w-8 h-8 flex items-center justify-center rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all"
       >
         <RotateCcw size={13} />
       </button>

@@ -100,33 +100,48 @@ export const EditorToolbar: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center gap-2 p-2 bg-zinc-900 rounded-xl border border-zinc-800 shadow-sm">
+    <div className="flex items-center gap-2 px-3 py-2 bg-[#18181A]/85 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
       {/* Tool Selection */}
       {TOOLS.map(({ id, icon: Icon, title }) => (
         <Button
           key={id}
-          variant={activeTool === id ? "default" : "ghost"}
+          variant="ghost"
           size="icon"
           onClick={() => setActiveTool(id)}
           title={title}
+          className={cn(
+            "w-9 h-9 rounded-xl transition-all duration-200",
+            activeTool === id
+              ? "bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+              : "text-white/60 hover:text-white hover:bg-white/5"
+          )}
         >
-          <Icon size={18} className={cn(activeTool !== id && "text-primary")} />
+          <Icon size={18} />
         </Button>
       ))}
 
-      <div className="w-px h-6 bg-zinc-800 mx-1" />
+      <div className="w-px h-6 bg-white/10 mx-1" />
 
       {/* Actions */}
-      <Button onClick={handleReset} variant="ghost" className="text-zinc-400 hover:text-white" title="Reset all changes">
+      <Button
+        onClick={handleReset}
+        variant="ghost"
+        className="h-9 px-3 text-xs font-medium rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all"
+        title="Reset all changes"
+      >
         Reset
       </Button>
 
-      <Button onClick={handleExport} variant="secondary">
-        <Download size={16} />
+      <Button
+        onClick={handleExport}
+        variant="ghost"
+        className="h-9 px-3 gap-2 text-xs font-medium rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+      >
+        <Download size={14} />
         Export
       </Button>
-
-      <Button onClick={handleExport} variant={"default"} title="Apply changes">
+      
+      <Button onClick={handleExport} variant="ghost" className="h-9 w-9 p-0 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" title="Apply changes">
         <Check size={16} />
       </Button>
     </div>

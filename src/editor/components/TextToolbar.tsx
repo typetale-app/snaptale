@@ -4,15 +4,13 @@ import {
   Bold,
   Italic,
   Underline,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
   Trash2,
   ChevronDown,
   ChevronRight,
   MoveHorizontal,
   Blend,
   Layers,
+  Settings2,
 } from "lucide-react";
 import { useEditor, type TextConfig } from "../context/EditorContext";
 import {
@@ -63,7 +61,7 @@ const NumericInput: React.FC<{
     min={min}
     max={max}
     step={step}
-    className={`${width} h-8 bg-zinc-800/40 hover:bg-zinc-800/80 focus:bg-zinc-800/80 border border-transparent focus:border-violet-500/50 rounded-md px-2 py-1 text-xs text-zinc-200 text-center focus:outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+    className={`${width} h-8 bg-white/5 hover:bg-white/10 focus:bg-white/10 border border-transparent focus:border-white/20 rounded-xl px-2 py-1 text-xs text-white/90 text-center focus:outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
   />
 );
 
@@ -77,10 +75,10 @@ const ToggleBtn: React.FC<{
   <button
     onClick={onClick}
     title={title}
-    className={`w-8 h-8 flex items-center justify-center rounded-md transition-all duration-150 ${
+    className={`w-8 h-8 flex items-center justify-center rounded-xl transition-all duration-200 ${
       active
-        ? "bg-violet-600/20 text-violet-400"
-        : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60"
+        ? "bg-white text-black shadow-sm"
+        : "text-white/60 hover:text-white hover:bg-white/10"
     }`}
   >
     {children}
@@ -98,15 +96,15 @@ const SubOptionBtn: React.FC<{
   return (
     <button
       onClick={() => navigateTo(pageId)}
-      className={`flex items-center gap-1.5 h-8 px-2.5 rounded-md transition-all text-xs ${
+      className={`flex items-center gap-1.5 h-8 px-2.5 rounded-xl transition-all text-xs ${
         active
-          ? "bg-violet-600/20 text-violet-400"
-          : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60"
+          ? "bg-white text-black shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+          : "text-white/60 hover:text-white hover:bg-white/10"
       }`}
     >
       {icon}
       <span className="font-medium">{label}</span>
-      <ChevronRight size={11} className="text-zinc-600 ml-0.5" />
+      <ChevronRight size={11} className="text-white/40 ml-0.5" />
     </button>
   );
 };
@@ -122,7 +120,7 @@ const IconSlider: React.FC<{
   step: number;
 }> = ({ icon, title, value, onChange, min, max, step }) => (
   <div className="flex items-center gap-2 group" title={title}>
-    <div className="text-zinc-500 group-hover:text-zinc-300 transition-colors">
+    <div className="text-white/40 group-hover:text-white/80 transition-colors">
       {icon}
     </div>
     <input
@@ -132,7 +130,33 @@ const IconSlider: React.FC<{
       step={step}
       value={value}
       onChange={(e) => onChange(Number(e.target.value))}
-      className="w-14 h-1 bg-zinc-800 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:bg-violet-400 [&::-webkit-slider-thumb]:rounded-full"
+      className="w-14 h-1 bg-white/10 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full cursor-pointer"
+    />
+  </div>
+);
+
+/* ─── Slider with text label ─── */
+const LabelSlider: React.FC<{
+  label: string;
+  title: string;
+  value: number;
+  onChange: (v: number) => void;
+  min: number;
+  max: number;
+  step: number;
+}> = ({ label, title, value, onChange, min, max, step }) => (
+  <div className="flex items-center gap-2 group" title={title}>
+    <span className="text-[10px] text-white/50 font-medium uppercase tracking-wider group-hover:text-white/80 transition-colors">
+      {label}
+    </span>
+    <input
+      type="range"
+      min={min}
+      max={max}
+      step={step}
+      value={value}
+      onChange={(e) => onChange(Number(e.target.value))}
+      className="w-14 h-1 bg-white/10 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full cursor-pointer"
     />
   </div>
 );
@@ -165,13 +189,13 @@ const TextMainContent: React.FC = () => {
 
   if (!selectedText) {
     return (
-      <div className="flex items-center justify-between w-full px-2">
-        <span className="text-sm text-zinc-500">
+      <div className="flex items-center justify-between w-full px-2 gap-4">
+        <span className="text-sm text-white/50">
           Select a text layer or add new text to begin editing
         </span>
         <button
           onClick={() => addText()}
-          className="flex items-center gap-2 px-3 h-8 bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium rounded-md transition-colors"
+          className="flex items-center gap-2 px-3 h-8 bg-white text-black text-xs font-medium rounded-xl transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]"
         >
           <Plus size={14} />
           <span>Add Text</span>
@@ -187,12 +211,12 @@ const TextMainContent: React.FC = () => {
         <button
           onClick={() => addText()}
           title="Add new text"
-          className="w-8 h-8 rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors flex items-center justify-center shrink-0"
+          className="w-8 h-8 rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center shrink-0"
         >
           <Plus size={16} />
         </button>
 
-        <div className="w-px h-5 bg-zinc-800" />
+        <div className="w-[1px] h-4 bg-white/10" />
 
         {/* Typography Group */}
         <div className="flex items-center gap-2">
@@ -200,7 +224,7 @@ const TextMainContent: React.FC = () => {
             <select
               value={selectedText.fontFamily}
               onChange={(e) => update({ fontFamily: e.target.value })}
-              className="appearance-none h-8 bg-transparent hover:bg-zinc-800/40 rounded-md pl-2 pr-6 text-xs font-medium text-zinc-200 focus:outline-none transition-colors cursor-pointer min-w-[100px]"
+              className="appearance-none h-8 bg-white/5 hover:bg-white/10 rounded-xl pl-2 pr-6 text-xs font-medium text-white/90 focus:outline-none transition-colors cursor-pointer min-w-[100px]"
             >
               {FONT_FAMILIES.map((f) => (
                 <option key={f} value={f}>
@@ -210,7 +234,7 @@ const TextMainContent: React.FC = () => {
             </select>
             <ChevronDown
               size={12}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none"
             />
           </div>
 
@@ -222,7 +246,7 @@ const TextMainContent: React.FC = () => {
             width="w-12"
           />
 
-          <div className="flex items-center bg-zinc-800/30 rounded-md p-0.5 ml-1">
+          <div className="flex items-center bg-white/5 rounded-xl p-0.5 ml-1 border border-white/5 shadow-inner">
             <ToggleBtn
               active={selectedText.fontStyle.includes("bold")}
               onClick={() => toggleFontStyle("bold")}
@@ -254,29 +278,7 @@ const TextMainContent: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-px h-5 bg-zinc-800" />
-
-        {/* Alignment */}
-        <div className="flex items-center bg-zinc-800/30 rounded-md p-0.5">
-          {(
-            [
-              ["left", AlignLeft],
-              ["center", AlignCenter],
-              ["right", AlignRight],
-            ] as const
-          ).map(([align, Icon]) => (
-            <ToggleBtn
-              key={align}
-              active={selectedText.align === align}
-              onClick={() => update({ align })}
-              title={`Align ${align}`}
-            >
-              <Icon size={13} />
-            </ToggleBtn>
-          ))}
-        </div>
-
-        <div className="w-px h-5 bg-zinc-800" />
+        <div className="w-[1px] h-4 bg-white/10" />
 
         {/* Color Group */}
         <div className="flex items-center gap-1.5">
@@ -285,11 +287,11 @@ const TextMainContent: React.FC = () => {
               type="color"
               value={selectedText.fill}
               onChange={(e) => update({ fill: e.target.value })}
-              className="w-5 h-5 rounded-full cursor-pointer bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border [&::-webkit-color-swatch]:border-zinc-700/50 hover:scale-110 transition-transform"
+              className="w-5 h-5 rounded-full cursor-pointer bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border [&::-webkit-color-swatch]:border-white/20 hover:scale-110 transition-transform shadow-sm"
               title="Custom Color"
             />
           </div>
-          <div className="w-px h-3 bg-zinc-800 mx-0.5" />
+          <div className="w-[1px] h-3 bg-white/10 mx-0.5" />
           <div className="flex gap-1 items-center">
             {PRESET_COLORS.map((c) => (
               <button
@@ -297,8 +299,8 @@ const TextMainContent: React.FC = () => {
                 onClick={() => update({ fill: c })}
                 className={`w-4 h-4 rounded-full transition-all duration-100 ${
                   selectedText.fill.toLowerCase() === c.toLowerCase()
-                    ? "ring-1 ring-violet-400 ring-offset-2 ring-offset-[#1a1a1a] scale-110 border-none"
-                    : "hover:scale-110 border border-zinc-700/40"
+                    ? "ring-1 ring-white ring-offset-2 ring-offset-[#18181A] scale-110 border-none shadow-sm"
+                    : "hover:scale-110 border border-white/10"
                 }`}
                 style={{ backgroundColor: c }}
                 title={c}
@@ -307,44 +309,21 @@ const TextMainContent: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-px h-5 bg-zinc-800" />
+        <div className="w-[1px] h-4 bg-white/10" />
 
-        {/* Effects */}
-        <div className="flex items-center gap-3">
-          <IconSlider
-            icon={<Blend size={13} />}
-            title="Opacity"
-            value={selectedText.opacity}
-            onChange={(v) => update({ opacity: v })}
-            min={0}
-            max={1}
-            step={0.01}
-          />
-          <IconSlider
-            icon={<MoveHorizontal size={13} />}
-            title="Letter Spacing"
-            value={selectedText.letterSpacing}
-            onChange={(v) => update({ letterSpacing: v })}
-            min={-5}
-            max={20}
-            step={0.5}
-          />
-
-          {/* Shadow sub-option link */}
-          <SubOptionBtn
-            label="Shadow"
-            icon={<Layers size={13} />}
-            active={selectedText.shadowEnabled}
-            pageId="shadow"
-          />
-        </div>
+        {/* Advance Tools Link */}
+        <SubOptionBtn
+          label="Advance"
+          icon={<Settings2 size={13} />}
+          pageId="advance"
+        />
       </div>
 
       {/* Delete */}
       <button
         onClick={() => deleteText(selectedText.id)}
         title="Delete text"
-        className="w-8 h-8 rounded-full text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-colors flex items-center justify-center shrink-0"
+        className="w-8 h-8 rounded-xl text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-colors flex items-center justify-center shrink-0"
       >
         <Trash2 size={14} />
       </button>
@@ -353,9 +332,9 @@ const TextMainContent: React.FC = () => {
 };
 
 /* ═══════════════════════════════════════════════════════════
-   Shadow Sub-Page Content
+   Advance Sub-Page Content
    ═══════════════════════════════════════════════════════════ */
-const TextShadowContent: React.FC = () => {
+const TextAdvanceContent: React.FC = () => {
   const { texts, selectedTextId, updateText } = useEditor();
   const selectedText = texts.find((t) => t.id === selectedTextId);
 
@@ -366,75 +345,81 @@ const TextShadowContent: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center gap-5 w-full">
-      {/* Enable/Disable toggle */}
-      <ToggleBtn
-        active={selectedText.shadowEnabled}
-        onClick={() =>
-          update({ shadowEnabled: !selectedText.shadowEnabled })
-        }
-        title="Toggle Shadow"
-      >
-        <Layers size={13} />
-      </ToggleBtn>
-
-      <div className="w-px h-5 bg-zinc-800" />
-
-      {/* Shadow Color */}
-      <div className="flex items-center gap-2" title="Shadow Color">
-        <span className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider">
-          Color
-        </span>
-        <input
-          type="color"
-          value={selectedText.shadowColor}
-          onChange={(e) => update({ shadowColor: e.target.value })}
-          className="w-5 h-5 rounded-full cursor-pointer bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border [&::-webkit-color-swatch]:border-zinc-600 hover:scale-110 transition-transform"
+    <div className="flex items-center gap-5 w-full overflow-x-auto no-scrollbar scroll-smooth pr-4">
+      {/* Opacity & Spacing */}
+      <div className="flex items-center gap-4 shrink-0">
+        <IconSlider
+          icon={<Blend size={13} />}
+          title="Opacity"
+          value={selectedText.opacity}
+          onChange={(v) => update({ opacity: v })}
+          min={0}
+          max={1}
+          step={0.01}
+        />
+        <IconSlider
+          icon={<MoveHorizontal size={13} />}
+          title="Letter Spacing"
+          value={selectedText.letterSpacing}
+          onChange={(v) => update({ letterSpacing: v })}
+          min={-5}
+          max={20}
+          step={0.5}
         />
       </div>
 
-      <div className="w-px h-5 bg-zinc-800" />
+      <div className="w-[1px] h-4 bg-white/10 shrink-0" />
 
-      {/* Shadow Blur */}
-      <div className="flex items-center gap-2" title="Shadow Blur">
-        <span className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider">
-          Blur
-        </span>
-        <NumericInput
+      {/* Shadow Toggle & Settings */}
+      <div className="flex items-center gap-4 shrink-0">
+        <div className="flex items-center gap-3">
+          <ToggleBtn
+            active={selectedText.shadowEnabled}
+            onClick={() =>
+              update({ shadowEnabled: !selectedText.shadowEnabled })
+            }
+            title="Toggle Shadow"
+          >
+            <Layers size={13} />
+          </ToggleBtn>
+
+          <input
+            type="color"
+            value={selectedText.shadowColor}
+            onChange={(e) => update({ shadowColor: e.target.value })}
+            className="w-5 h-5 rounded-full cursor-pointer bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border [&::-webkit-color-swatch]:border-white/20 hover:scale-110 transition-transform shadow-sm"
+            title="Shadow Color"
+          />
+        </div>
+
+        <LabelSlider
+          label="Blur"
+          title="Shadow Blur"
           value={selectedText.shadowBlur}
-          onChange={(v) => update({ shadowBlur: Math.max(0, v) })}
+          onChange={(v) => update({ shadowBlur: v })}
           min={0}
           max={50}
-          width="w-12"
+          step={1}
         />
-      </div>
 
-      <div className="w-px h-5 bg-zinc-800" />
-
-      {/* Shadow Offsets */}
-      <div className="flex items-center gap-2" title="X Offset">
-        <span className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider">
-          X
-        </span>
-        <NumericInput
+        <LabelSlider
+          label="X"
+          title="X Offset"
           value={selectedText.shadowOffsetX}
           onChange={(v) => update({ shadowOffsetX: v })}
           min={-50}
           max={50}
-          width="w-12"
+          step={1}
         />
-      </div>
 
-      <div className="flex items-center gap-2" title="Y Offset">
-        <span className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider">
-          Y
-        </span>
-        <NumericInput
+        <LabelSlider
+          label="Y"
+          title="Y Offset"
           value={selectedText.shadowOffsetY}
           onChange={(v) => update({ shadowOffsetY: v })}
           min={-50}
           max={50}
-          width="w-12"
+          step={1}
         />
       </div>
     </div>
@@ -447,7 +432,7 @@ const TextShadowContent: React.FC = () => {
 export const TextToolbar: React.FC<{ visible: boolean }> = ({ visible }) => {
   const pages: ToolbarPage[] = [
     { id: "main", label: "Text", content: <TextMainContent /> },
-    { id: "shadow", label: "Drop Shadow", content: <TextShadowContent /> },
+    { id: "advance", label: "Advance", content: <TextAdvanceContent /> },
   ];
 
   return <BottomToolbarWithNav visible={visible} pages={pages} />;
