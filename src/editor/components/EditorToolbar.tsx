@@ -4,6 +4,7 @@ import { useEditor, type ToolType } from "../context/EditorContext";
 import useImage from "use-image";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import Konva from "konva";
 
 const TOOLS: { id: ToolType; icon: React.ElementType; title: string }[] = [
   { id: "crop", icon: Crop, title: "Crop Tool" },
@@ -29,6 +30,7 @@ export const EditorToolbar: React.FC = () => {
     setCrop,
     imageSize,
     stageRef,
+    zoom,
   } = useEditor();
   const [img] = useImage(imageUrl, "anonymous");
 
@@ -62,24 +64,36 @@ export const EditorToolbar: React.FC = () => {
     const stage = stageRef.current;
     if (!stage || !img) return;
 
-    // 1. Find and hide all Transformers (for texts and symbols)
+    // 1. Find the Konva.Image node
+    const imageNode = stage.findOne("Image") as Konva.Image | undefined;
+    const wasCached = imageNode?.isCached();
+
+    // 2. Find and hide all Transformers (for texts and symbols)
     const transformers = stage.find("Transformer");
     transformers.forEach((tr) => tr.hide());
 
-    // 2. Find and hide the crop tool overlay group (if active)
+    // 3. Find and hide the crop tool overlay group (if active)
     const cropGroup = stage.findOne(".crop-group");
     if (cropGroup) {
       cropGroup.hide();
     }
 
-    // 3. Force redraw the layers to apply hidden state
+    // 4. If image has filters and is cached, temporarily cache it at original high-resolution
+    if (imageNode && wasCached) {
+      imageNode.clearCache();
+      imageNode.cache({
+        pixelRatio: 1 / baseScale,
+      });
+    }
+
+    // 5. Force redraw the layers to apply hidden/high-res state
     stage.getLayers().forEach((layer) => {
       layer.draw();
     });
 
-    // 4. Determine region and pixelRatio to export at high/original resolution
+    // 6. Determine region and pixelRatio to export at high/original resolution
     let options: any = {
-      pixelRatio: 1 / baseScale,
+      pixelRatio: 1 / (baseScale * zoom),
     };
 
     if (activeTool === "crop") {
@@ -93,20 +107,27 @@ export const EditorToolbar: React.FC = () => {
       };
     }
 
-    // 5. Generate data URL
+    // 7. Generate data URL
     const dataUrl = stage.toDataURL(options);
 
-    // 6. Download the image
+    // 8. Download the image
     const link = document.createElement("a");
     link.download = "edited-image.png";
     link.href = dataUrl;
     link.click();
 
-    // 7. Restore visibility of transformers and crop group
+    // 9. Restore visibility of transformers and crop group
     transformers.forEach((tr) => tr.show());
     if (cropGroup) {
       cropGroup.show();
     }
+
+    // 10. Restore image cache to normal display resolution if it was cached
+    if (imageNode && wasCached) {
+      imageNode.clearCache();
+      imageNode.cache();
+    }
+
     stage.getLayers().forEach((layer) => {
       layer.batchDraw();
     });
