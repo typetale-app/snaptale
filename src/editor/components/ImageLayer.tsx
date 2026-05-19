@@ -22,6 +22,7 @@ export const ImageLayer: React.FC = () => {
     stagePos,
     setStagePos,
     filters,
+    activeTool,
   } = useEditor();
   const [img] = useImage(imageUrl, "anonymous");
   const imageGroupRef = useRef<Konva.Group>(null);
@@ -116,8 +117,15 @@ export const ImageLayer: React.FC = () => {
         width: w * 0.8,
         height: h * 0.8,
       });
+
+      // Keep zoom to 80% when first loaded
+      setZoom(0.8);
+      setStagePos({
+        x: w * 0.1,
+        y: h * 0.1,
+      });
     }
-  }, [img, setStageSize, setImageSize, setBaseScale, setCrop]);
+  }, [img, setStageSize, setImageSize, setBaseScale, setCrop, setZoom, setStagePos]);
 
   // Apply Filters
   useEffect(() => {
@@ -164,7 +172,7 @@ export const ImageLayer: React.FC = () => {
         y={stagePos.y}
         scaleX={zoom}
         scaleY={zoom}
-        draggable={true}
+        draggable={activeTool === "crop"}
         onDragMove={(e) => {
           const node = e.target;
           let newX = node.x();

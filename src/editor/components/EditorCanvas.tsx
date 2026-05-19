@@ -8,10 +8,11 @@ import { TextTool } from '../tools/TextTool';
 import { SymbolsTool } from '../tools/SymbolsTool';
 
 export const EditorCanvas: React.FC = () => {
-    const { stageSize, zoom, setZoom, stagePos, setStagePos, setSelectedTextId, activeTool, setSelectedSymbolId } = useEditor();
-    const stageRef = useRef<Konva.Stage>(null);
+    const { stageSize, zoom, setZoom, stagePos, setStagePos, setSelectedTextId, activeTool, setSelectedSymbolId, stageRef } = useEditor();
 
     const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
+        if (activeTool !== 'crop') return;
+
         e.evt.preventDefault();
         const stage = stageRef.current;
         if (!stage) return;

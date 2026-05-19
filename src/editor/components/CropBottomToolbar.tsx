@@ -4,17 +4,15 @@ import AngleSlider from '@/components/AngleSlider';
 
 export const CropBottomToolbar = () => {
     const { imageRotation, setImageRotation } = useEditor();
-    // Use local state for smooth sliding, then update context
-    const [localRot, setLocalRot] = useState<number | null>(null);
 
-    const displayRot = localRot !== null ? localRot : (imageRotation % 360);
+    const nearest90 = Math.round(imageRotation / 90) * 90;
+    const deviation = imageRotation - nearest90;
 
     const handleSliderChange = (val: number) => {
-        setLocalRot(val);
-        setImageRotation(val);
+        setImageRotation(nearest90 + val);
     };
 
     return (
-        <AngleSlider onChange={handleSliderChange} />
+        <AngleSlider initialValue={deviation} onChange={handleSliderChange} />
     );
 };

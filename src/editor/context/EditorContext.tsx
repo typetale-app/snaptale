@@ -7,6 +7,7 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
+import Konva from "konva";
 
 export type ToolType =
   | "crop"
@@ -146,6 +147,11 @@ interface EditorState {
    * Restores the viewport to the crop-mode view (before the last applyCrop).
    */
   restoreCropView: () => void;
+
+  /**
+   * Ref to the Konva Stage component.
+   */
+  stageRef: React.RefObject<Konva.Stage | null>;
 }
 
 const EditorContext = createContext<EditorState | undefined>(undefined);
@@ -154,6 +160,7 @@ export const EditorProvider: React.FC<{
   imageUrl: string;
   children: ReactNode;
 }> = ({ imageUrl, children }) => {
+  const stageRef = useRef<Konva.Stage>(null);
   const [stageSize, setStageSize] = useState<StageSize>({
     width: 0,
     height: 0,
@@ -163,7 +170,7 @@ export const EditorProvider: React.FC<{
     height: 0,
   });
   const [baseScale, setBaseScale] = useState<number>(1);
-  const [zoom, setZoom] = useState<number>(1);
+  const [zoom, setZoom] = useState<number>(0.8);
   const [stagePos, setStagePos] = useState({ x: 0, y: 0 });
   const [activeTool, setActiveTool] = useState<ToolType>("crop");
   const [crop, setCrop] = useState<CropConfig>({
@@ -394,6 +401,7 @@ export const EditorProvider: React.FC<{
     clearAllSymbols,
     applyCrop,
     restoreCropView,
+    stageRef,
   };
 
   return (

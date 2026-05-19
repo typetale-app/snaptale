@@ -28,13 +28,17 @@ export const EditorToolbar: React.FC = () => {
     clearAllTexts,
     setCrop,
     imageSize,
+    stageRef,
   } = useEditor();
   const [img] = useImage(imageUrl, "anonymous");
 
   const handleReset = () => {
     // Reset view
-    setZoom(1);
-    setStagePos({ x: 0, y: 0 });
+    setZoom(0.8);
+    setStagePos({
+      x: imageSize.width * 0.1,
+      y: imageSize.height * 0.1,
+    });
     // Reset transforms
     setImageRotation(0);
     setImageScaleX(1);
@@ -55,48 +59,57 @@ export const EditorToolbar: React.FC = () => {
   };
 
   const handleExport = () => {
-    if (!img) return;
+    const stage = stageRef.current;
+    if (!stage || !img) return;
 
-    let exportConfig = {
-      x: 0,
-      y: 0,
-      width: img.width,
-      height: img.height,
+    // 1. Find and hide all Transformers (for texts and symbols)
+    const transformers = stage.find("Transformer");
+    transformers.forEach((tr) => tr.hide());
+
+    // 2. Find and hide the crop tool overlay group (if active)
+    const cropGroup = stage.findOne(".crop-group");
+    if (cropGroup) {
+      cropGroup.hide();
+    }
+
+    // 3. Force redraw the layers to apply hidden state
+    stage.getLayers().forEach((layer) => {
+      layer.draw();
+    });
+
+    // 4. Determine region and pixelRatio to export at high/original resolution
+    let options: any = {
+      pixelRatio: 1 / baseScale,
     };
 
     if (activeTool === "crop") {
-      exportConfig = {
-        x: crop.x / baseScale,
-        y: crop.y / baseScale,
-        width: crop.width / baseScale,
-        height: crop.height / baseScale,
+      // In crop mode, export only the crop bounding box area
+      options = {
+        ...options,
+        x: crop.x,
+        y: crop.y,
+        width: crop.width,
+        height: crop.height,
       };
     }
 
-    const tempStage = document.createElement("canvas");
-    tempStage.width = exportConfig.width;
-    tempStage.height = exportConfig.height;
-    const ctx = tempStage.getContext("2d");
+    // 5. Generate data URL
+    const dataUrl = stage.toDataURL(options);
 
-    if (ctx) {
-      ctx.drawImage(
-        img,
-        exportConfig.x,
-        exportConfig.y,
-        exportConfig.width,
-        exportConfig.height,
-        0,
-        0,
-        exportConfig.width,
-        exportConfig.height,
-      );
-      const dataUrl = tempStage.toDataURL("image/png");
+    // 6. Download the image
+    const link = document.createElement("a");
+    link.download = "edited-image.png";
+    link.href = dataUrl;
+    link.click();
 
-      const link = document.createElement("a");
-      link.download = "edited-image.png";
-      link.href = dataUrl;
-      link.click();
+    // 7. Restore visibility of transformers and crop group
+    transformers.forEach((tr) => tr.show());
+    if (cropGroup) {
+      cropGroup.show();
     }
+    stage.getLayers().forEach((layer) => {
+      layer.batchDraw();
+    });
   };
 
   return (

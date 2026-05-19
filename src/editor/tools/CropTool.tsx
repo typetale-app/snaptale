@@ -20,7 +20,7 @@ export const CropTool: React.FC = () => {
     if (activeTool !== 'crop') return null;
 
     return (
-        <Group>
+        <Group name="crop-group">
             {/* Darkened Overlay with a Hole */}
             <Path
                 data={`M 0 0 L ${stageSize.width} 0 L ${stageSize.width} ${stageSize.height} L 0 ${stageSize.height} Z M ${crop.x} ${crop.y} L ${crop.x} ${crop.y + crop.height} L ${crop.x + crop.width} ${crop.y + crop.height} L ${crop.x + crop.width} ${crop.y} Z`}

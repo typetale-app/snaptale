@@ -29,10 +29,10 @@ const CropOptionBtn: React.FC<{
   return (
     <button
       onClick={() => navigateTo(pageId)}
-      className="flex items-center gap-1.5 h-8 px-2.5 rounded-xl transition-all text-xs text-white/70 hover:text-white hover:bg-white/10"
+      className="flex items-center gap-1.5 h-8 px-2.5 rounded-xl transition-all text-sm font-semibold text-white/70 hover:text-white hover:bg-white/10"
     >
       {icon}
-      <span className="font-medium">{label}</span>
+      <span>{label}</span>
       {detail && (
         <span className="text-white/50 tabular-nums text-[10px]">{detail}</span>
       )}
@@ -44,17 +44,19 @@ const CropOptionBtn: React.FC<{
 /* ─── Main crop controls ─── */
 const CropMainContent: React.FC = () => {
   const { setImageRotation, setImageScaleX, setImageScaleY, zoom, imageRotation } = useEditor();
+  const nearest90 = Math.round(imageRotation / 90) * 90;
+  const deviation = imageRotation - nearest90;
 
   return (
     <div className="flex items-center gap-2 w-full">
       <button
         onClick={() =>
           setImageRotation(
-            (r: number) => Math.round((r - 90) / 90) * 90
+            (r: number) => r - 90
           )
         }
         title="Rotate Left 90°"
-        className="flex items-center gap-2 px-3 h-8 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all text-xs font-medium"
+        className="flex items-center gap-2 px-3 h-8 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-semibold"
       >
         <RotateCcw size={14} />
         <span>Rotate</span>
@@ -63,7 +65,7 @@ const CropMainContent: React.FC = () => {
       <button
         onClick={() => setImageScaleX((s: number) => s * -1)}
         title="Flip Horizontal"
-        className="flex items-center gap-2 px-3 h-8 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all text-xs font-medium"
+        className="flex items-center gap-2 px-3 h-8 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-semibold"
       >
         <FlipHorizontal size={14} />
         <span>Flip H</span>
@@ -72,20 +74,20 @@ const CropMainContent: React.FC = () => {
       <button
         onClick={() => setImageScaleY((s: number) => s * -1)}
         title="Flip Vertical"
-        className="flex items-center gap-2 px-3 h-8 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all text-xs font-medium"
+        className="flex items-center gap-2 px-3 h-8 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-semibold"
       >
         <FlipVertical size={14} />
         <span>Flip V</span>
       </button>
 
-      <div className="w-[1px] h-4 bg-white/10" />
+      <div className="w-px h-4 bg-white/10" />
 
       {/* Navigate to Straighten sub-page */}
       <CropOptionBtn
         label="Straighten"
         icon={<RotateCw size={13} />}
         pageId="angle"
-        detail={`${imageRotation % 360}°`}
+        detail={`${deviation === 0 ? "0" : deviation > 0 ? `+${deviation}` : deviation}°`}
       />
 
       {/* Navigate to Zoom sub-page */}
@@ -102,8 +104,8 @@ const CropMainContent: React.FC = () => {
 /* ─── Straighten Sub-Page ─── */
 const CropAngleContent: React.FC = () => {
   const { imageRotation, setImageRotation } = useEditor();
-  const baseRotation = Math.floor(imageRotation / 90) * 90;
-  const angle = imageRotation % 360;
+  const nearest90 = Math.round(imageRotation / 90) * 90;
+  const deviation = imageRotation - nearest90;
 
   return (
     <div className="flex items-center gap-4 w-full">
@@ -121,14 +123,14 @@ const CropAngleContent: React.FC = () => {
           min={-45}
           max={45}
           step={1}
-          value={angle}
+          value={deviation}
           onChange={(e) =>
-            setImageRotation(baseRotation + Number(e.target.value))
+            setImageRotation(nearest90 + Number(e.target.value))
           }
           className="flex-1 h-1 bg-white/10 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md cursor-pointer"
         />
         <span className="text-xs text-white/50 tabular-nums w-10 text-right">
-          {angle}°
+          {deviation === 0 ? "0" : deviation > 0 ? `+${deviation}` : deviation}°
         </span>
       </div>
 
@@ -140,10 +142,10 @@ const CropAngleContent: React.FC = () => {
         <RotateCwSquare size={14} />
       </button>
 
-      <div className="w-[1px] h-4 bg-white/10" />
+      <div className="w-px h-4 bg-white/10" />
 
       <button
-        onClick={() => setImageRotation(0)}
+        onClick={() => setImageRotation(nearest90)}
         title="Reset Angle"
         className="w-8 h-8 flex items-center justify-center rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all"
       >
@@ -155,7 +157,7 @@ const CropAngleContent: React.FC = () => {
 
 /* ─── Zoom Sub-Page ─── */
 const CropZoomContent: React.FC = () => {
-  const { zoom, setZoom, setStagePos } = useEditor();
+  const { zoom, setZoom, setStagePos, imageSize } = useEditor();
 
   return (
     <div className="flex items-center gap-4 w-full">
@@ -180,6 +182,7 @@ const CropZoomContent: React.FC = () => {
         <span className="text-xs text-white/50 tabular-nums w-10 text-right">
           {Math.round(zoom * 100)}%
         </span>
+
       </div>
 
       <button
@@ -190,12 +193,15 @@ const CropZoomContent: React.FC = () => {
         <ZoomIn size={14} />
       </button>
 
-      <div className="w-[1px] h-4 bg-white/10" />
+      <div className="w-px h-4 bg-white/10" />
 
       <button
         onClick={() => {
-          setZoom(1);
-          setStagePos({ x: 0, y: 0 });
+          setZoom(0.8);
+          setStagePos({
+            x: imageSize.width * 0.1,
+            y: imageSize.height * 0.1,
+          });
         }}
         title="Reset Zoom"
         className="w-8 h-8 flex items-center justify-center rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all"
