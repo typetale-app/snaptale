@@ -14,10 +14,11 @@ import {
 } from "lucide-react";
 import { useEditor, type TextConfig } from "../context/EditorContext";
 import {
-  BottomToolbarWithNav,
+  BottomToolbar,
   useToolbarNav,
   type ToolbarPage,
 } from "./BottomToolbar";
+import { EditorSlider } from "./EditorSlider";
 
 const FONT_FAMILIES = [
   "Inter",
@@ -123,14 +124,13 @@ const IconSlider: React.FC<{
     <div className="text-white/40 group-hover:text-white/80 transition-colors">
       {icon}
     </div>
-    <input
-      type="range"
+    <EditorSlider
       min={min}
       max={max}
       step={step}
       value={value}
-      onChange={(e) => onChange(Number(e.target.value))}
-      className="w-14 h-1 bg-white/10 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full cursor-pointer"
+      onChange={onChange}
+      className="w-14 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5"
     />
   </div>
 );
@@ -149,14 +149,13 @@ const LabelSlider: React.FC<{
     <span className="text-[10px] text-white/50 font-medium uppercase tracking-wider group-hover:text-white/80 transition-colors">
       {label}
     </span>
-    <input
-      type="range"
+    <EditorSlider
       min={min}
       max={max}
       step={step}
       value={value}
-      onChange={(e) => onChange(Number(e.target.value))}
-      className="w-14 h-1 bg-white/10 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full cursor-pointer"
+      onChange={onChange}
+      className="w-14 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5"
     />
   </div>
 );
@@ -216,7 +215,7 @@ const TextMainContent: React.FC = () => {
           <Plus size={16} />
         </button>
 
-        <div className="w-[1px] h-4 bg-white/10" />
+        <div className="w-px h-4 bg-white/10" />
 
         {/* Typography Group */}
         <div className="flex items-center gap-2">
@@ -278,7 +277,7 @@ const TextMainContent: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-[1px] h-4 bg-white/10" />
+        <div className="w-px h-4 bg-white/10" />
 
         {/* Color Group */}
         <div className="flex items-center gap-1.5">
@@ -291,7 +290,7 @@ const TextMainContent: React.FC = () => {
               title="Custom Color"
             />
           </div>
-          <div className="w-[1px] h-3 bg-white/10 mx-0.5" />
+          <div className="w-px h-3 bg-white/10 mx-0.5" />
           <div className="flex gap-1 items-center">
             {PRESET_COLORS.map((c) => (
               <button
@@ -309,7 +308,7 @@ const TextMainContent: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-[1px] h-4 bg-white/10" />
+        <div className="w-px h-4 bg-white/10" />
 
         {/* Advance Tools Link */}
         <SubOptionBtn
@@ -368,7 +367,7 @@ const TextAdvanceContent: React.FC = () => {
         />
       </div>
 
-      <div className="w-[1px] h-4 bg-white/10 shrink-0" />
+      <div className="w-px h-4 bg-white/10 shrink-0" />
 
       {/* Shadow Toggle & Settings */}
       <div className="flex items-center gap-4 shrink-0">
@@ -435,5 +434,5 @@ export const TextToolbar: React.FC<{ visible: boolean }> = ({ visible }) => {
     { id: "advance", label: "Advance", content: <TextAdvanceContent /> },
   ];
 
-  return <BottomToolbarWithNav visible={visible} pages={pages} />;
+  return <BottomToolbar visible={visible} pages={pages} />;
 };

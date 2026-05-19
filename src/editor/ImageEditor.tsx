@@ -11,7 +11,7 @@ import { CropToolbar } from "./components/CropToolbar";
 import { FilterToolbar } from "./components/FilterToolbar";
 import { TextToolbar } from "./components/TextToolbar";
 import { SymbolsToolbar } from "./components/SymbolsToolbar";
-import { BottomToolbarWithNav, type ToolbarPage } from "./components/BottomToolbar";
+import { BottomToolbar, type ToolbarPage } from "./components/BottomToolbar";
 import { useEditor } from "./context/EditorContext";
 import {
   RotateCw,
@@ -71,7 +71,7 @@ const RotateToolbar: React.FC<{ visible: boolean }> = ({ visible }) => {
       ),
     },
   ];
-  return <BottomToolbarWithNav visible={visible} pages={pages} />;
+  return <BottomToolbar visible={visible} pages={pages} />;
 };
 
 

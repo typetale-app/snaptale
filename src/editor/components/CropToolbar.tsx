@@ -11,9 +11,10 @@ import {
   RotateCwSquare,
 } from "lucide-react";
 import { useEditor } from "../context/EditorContext";
+import { EditorSlider } from "./EditorSlider";
 import ImageRotateIcon from "@/components/icons/image-rotate";
 import {
-  BottomToolbarWithNav,
+  BottomToolbar,
   useToolbarNav,
   type ToolbarPage,
 } from "./BottomToolbar";
@@ -118,16 +119,13 @@ const CropAngleContent: React.FC = () => {
       </button>
 
       <div className="flex-1 flex items-center gap-2">
-        <input
-          type="range"
+        <EditorSlider
           min={-45}
           max={45}
           step={1}
           value={deviation}
-          onChange={(e) =>
-            setImageRotation(nearest90 + Number(e.target.value))
-          }
-          className="flex-1 h-1 bg-white/10 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md cursor-pointer"
+          onChange={(val) => setImageRotation(nearest90 + val)}
+          className="flex-1"
         />
         <span className="text-xs text-white/50 tabular-nums w-10 text-right">
           {deviation === 0 ? "0" : deviation > 0 ? `+${deviation}` : deviation}°
@@ -170,14 +168,13 @@ const CropZoomContent: React.FC = () => {
       </button>
 
       <div className="flex-1 flex items-center gap-2">
-        <input
-          type="range"
+        <EditorSlider
           min={0.5}
           max={3}
           step={0.01}
           value={zoom}
-          onChange={(e) => setZoom(Number(e.target.value))}
-          className="flex-1 h-1 bg-white/10 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md cursor-pointer"
+          onChange={setZoom}
+          className="flex-1"
         />
         <span className="text-xs text-white/50 tabular-nums w-10 text-right">
           {Math.round(zoom * 100)}%
@@ -226,5 +223,5 @@ export const CropToolbar: React.FC<{ visible: boolean }> = ({ visible }) => {
     { id: "zoom", label: "Zoom", content: <CropZoomContent /> },
   ];
 
-  return <BottomToolbarWithNav visible={visible} pages={pages} />;
+  return <BottomToolbar visible={visible} pages={pages} />;
 };

@@ -2,11 +2,12 @@ import React from "react";
 import { SlidersHorizontal, Image as ImageIcon, RotateCcw } from "lucide-react";
 import { useEditor } from "../context/EditorContext";
 import {
-  BottomToolbarWithNav,
+  BottomToolbar,
   useToolbarNav,
   type ToolbarPage,
 } from "./BottomToolbar";
 import { cn } from "@/lib/utils";
+import { EditorSlider } from "./EditorSlider";
 
 const PRESETS = [
   { id: "none", label: "Normal" },
@@ -104,14 +105,13 @@ const FilterAdjustContent: React.FC = () => {
               {s.id === 'blur' ? s.value : Math.round(s.value * (s.id === 'brightness' ? 100 : 1))}
             </span>
           </div>
-          <input
-            type="range"
+          <EditorSlider
             min={s.min}
             max={s.max}
             step={s.step}
             value={s.value}
-            onChange={(e) => updateFilter(s.id, Number(e.target.value))}
-            className="w-full h-1 bg-white/10 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md cursor-pointer"
+            onChange={(val) => updateFilter(s.id, val)}
+            className="w-full"
           />
         </div>
       ))}
@@ -144,5 +144,5 @@ export const FilterToolbar: React.FC<{ visible: boolean }> = ({ visible }) => {
     { id: "adjust", label: "Adjustments", content: <FilterAdjustContent /> },
   ];
 
-  return <BottomToolbarWithNav visible={visible} pages={pages} />;
+  return <BottomToolbar visible={visible} pages={pages} />;
 };

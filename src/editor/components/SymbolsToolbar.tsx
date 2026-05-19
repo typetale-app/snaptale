@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { BottomToolbarWithNav, type ToolbarPage } from "./BottomToolbar";
+import { BottomToolbar, type ToolbarPage } from "./BottomToolbar";
 import { useEditor } from "../context/EditorContext";
+import { EditorSlider } from "./EditorSlider";
 import {
   Trash2,
   Blend,
@@ -53,18 +54,17 @@ const SymbolsMainContent: React.FC<{
               size={13}
               className="text-white/40 group-hover:text-white/80 transition-colors"
             />
-            <input
-              type="range"
+            <EditorSlider
               min={0}
               max={1}
               step={0.01}
               value={selectedSymbol.opacity}
-              onChange={(e) =>
+              onChange={(val) =>
                 updateSymbol(selectedSymbol.id, {
-                  opacity: Number(e.target.value),
+                  opacity: val,
                 })
               }
-              className="w-16 h-1 bg-white/10 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full cursor-pointer"
+              className="w-16 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5"
             />
           </div>
 
@@ -114,18 +114,17 @@ const SymbolsMainContent: React.FC<{
                 title="Border Width"
               >
                 <CircleIcon size={11} className="text-white/40" />
-                <input
-                  type="range"
+                <EditorSlider
                   min={0}
                   max={40}
                   step={1}
                   value={selectedSymbol.strokeWidth || 0}
-                  onChange={(e) =>
+                  onChange={(val) =>
                     updateSymbol(selectedSymbol.id, {
-                      strokeWidth: Number(e.target.value),
+                      strokeWidth: val,
                     })
                   }
-                  className="w-12 h-1 bg-white/10 rounded-full appearance-none outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full cursor-pointer"
+                  className="w-12 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5"
                 />
               </div>
             </>
@@ -260,7 +259,7 @@ export const SymbolsToolbar: React.FC<{ visible: boolean }> = ({ visible }) => {
 
   return (
     <>
-      <BottomToolbarWithNav visible={visible} pages={pages} />
+      <BottomToolbar visible={visible} pages={pages} />
 
       {visible && showPicker && (
         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-50 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">

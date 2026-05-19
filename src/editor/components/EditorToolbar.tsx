@@ -1,10 +1,10 @@
 import React from "react";
 import { Download, Crop, Type, Shapes, Check, Sparkles } from "lucide-react";
 import { useEditor, type ToolType } from "../context/EditorContext";
-import useImage from "use-image";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import Konva from "konva";
+import { useExport } from "../hooks/useExport";
+import { useReset } from "../hooks/useReset";
 
 const TOOLS: { id: ToolType; icon: React.ElementType; title: string }[] = [
   { id: "crop", icon: Crop, title: "Crop Tool" },
@@ -14,124 +14,9 @@ const TOOLS: { id: ToolType; icon: React.ElementType; title: string }[] = [
 ];
 
 export const EditorToolbar: React.FC = () => {
-  const {
-    activeTool,
-    setActiveTool,
-    crop,
-    baseScale,
-    imageUrl,
-    setZoom,
-    setStagePos,
-    setImageRotation,
-    setImageScaleX,
-    setImageScaleY,
-    setFilters,
-    clearAllTexts,
-    setCrop,
-    imageSize,
-    stageRef,
-    zoom,
-  } = useEditor();
-  const [img] = useImage(imageUrl, "anonymous");
-
-  const handleReset = () => {
-    // Reset view
-    setZoom(0.8);
-    setStagePos({
-      x: imageSize.width * 0.1,
-      y: imageSize.height * 0.1,
-    });
-    // Reset transforms
-    setImageRotation(0);
-    setImageScaleX(1);
-    setImageScaleY(1);
-    // Reset filters
-    setFilters({ preset: "none", brightness: 0, contrast: 0, saturation: 0, blur: 0 });
-    // Reset text & symbols
-    clearAllTexts();
-    // Reset crop
-    if (imageSize.width > 0 && imageSize.height > 0) {
-      setCrop({
-        x: imageSize.width * 0.1,
-        y: imageSize.height * 0.1,
-        width: imageSize.width * 0.8,
-        height: imageSize.height * 0.8,
-      });
-    }
-  };
-
-  const handleExport = () => {
-    const stage = stageRef.current;
-    if (!stage || !img) return;
-
-    // 1. Find the Konva.Image node
-    const imageNode = stage.findOne("Image") as Konva.Image | undefined;
-    const wasCached = imageNode?.isCached();
-
-    // 2. Find and hide all Transformers (for texts and symbols)
-    const transformers = stage.find("Transformer");
-    transformers.forEach((tr) => tr.hide());
-
-    // 3. Find and hide the crop tool overlay group (if active)
-    const cropGroup = stage.findOne(".crop-group");
-    if (cropGroup) {
-      cropGroup.hide();
-    }
-
-    // 4. If image has filters and is cached, temporarily cache it at original high-resolution
-    if (imageNode && wasCached) {
-      imageNode.clearCache();
-      imageNode.cache({
-        pixelRatio: 1 / baseScale,
-      });
-    }
-
-    // 5. Force redraw the layers to apply hidden/high-res state
-    stage.getLayers().forEach((layer) => {
-      layer.draw();
-    });
-
-    // 6. Determine region and pixelRatio to export at high/original resolution
-    let options: any = {
-      pixelRatio: 1 / (baseScale * zoom),
-    };
-
-    if (activeTool === "crop") {
-      // In crop mode, export only the crop bounding box area
-      options = {
-        ...options,
-        x: crop.x,
-        y: crop.y,
-        width: crop.width,
-        height: crop.height,
-      };
-    }
-
-    // 7. Generate data URL
-    const dataUrl = stage.toDataURL(options);
-
-    // 8. Download the image
-    const link = document.createElement("a");
-    link.download = "edited-image.png";
-    link.href = dataUrl;
-    link.click();
-
-    // 9. Restore visibility of transformers and crop group
-    transformers.forEach((tr) => tr.show());
-    if (cropGroup) {
-      cropGroup.show();
-    }
-
-    // 10. Restore image cache to normal display resolution if it was cached
-    if (imageNode && wasCached) {
-      imageNode.clearCache();
-      imageNode.cache();
-    }
-
-    stage.getLayers().forEach((layer) => {
-      layer.batchDraw();
-    });
-  };
+  const { activeTool, setActiveTool } = useEditor();
+  const { handleExport } = useExport();
+  const { handleReset } = useReset();
 
   return (
     <div className="flex items-center gap-2 px-3 py-2 bg-[#18181A]/85 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
@@ -181,3 +66,4 @@ export const EditorToolbar: React.FC = () => {
     </div>
   );
 };
+
