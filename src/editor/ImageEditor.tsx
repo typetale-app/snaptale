@@ -5,6 +5,7 @@ import { EditorCanvas } from "./components/EditorCanvas";
 
 interface ImageEditorProps {
   imageUrl: string;
+  onClose?: () => void;
 }
 
 import { CropToolbar } from "./components/CropToolbar";
@@ -17,16 +18,11 @@ import {
   RotateCw,
   FlipHorizontal2,
   FlipVertical2,
-  ImageIcon,
-  Shapes,
-  SunMedium,
-  Contrast,
-  Palette,
+  X,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 /* ─── Placeholder toolbars for tools that don't have full implementations yet ─── */
-
-
 
 const RotateToolbar: React.FC<{ visible: boolean }> = ({ visible }) => {
   const { imageRotation, setImageRotation, imageScaleX, setImageScaleX, imageScaleY, setImageScaleY } = useEditor();
@@ -77,8 +73,7 @@ const RotateToolbar: React.FC<{ visible: boolean }> = ({ visible }) => {
 
 
 /* ─── Main Content ─── */
-
-export const ImageEditorContent: React.FC = () => {
+export function ImageEditorContent({ onClose }: { onClose?: () => void }) {
   const { activeTool, applyCrop, restoreCropView } = useEditor();
 
   // Handle transitions between crop and other tools.
@@ -86,17 +81,22 @@ export const ImageEditorContent: React.FC = () => {
   useEffect(() => {
     const prev = prevToolRef.current;
     if (prev === "crop" && activeTool !== "crop") {
-      // Leaving crop mode → show cropped result
       applyCrop();
     } else if (prev !== "crop" && activeTool === "crop") {
-      // Re-entering crop mode → restore the crop-mode viewport
       restoreCropView();
     }
     prevToolRef.current = activeTool;
   }, [activeTool, applyCrop, restoreCropView]);
 
   return (
-    <div className="flex flex-col items-center w-full h-full bg-[#222222] absolute inset-0 text-white">
+    <div className="flex flex-col items-center w-full h-full absolute inset-0">
+
+      <div className="fixed top-5 right-4 z-50">
+        <Button variant="ghost" className="btn-secondary" onClick={onClose}>
+          <X />
+        </Button>
+      </div>
+
       <div className="w-full flex justify-center py-4 z-10">
         <EditorToolbar />
       </div>
@@ -122,12 +122,12 @@ export const ImageEditorContent: React.FC = () => {
       )}
     </div>
   );
-};
+}
 
-export const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl }) => {
+export function ImageEditor({ imageUrl, onClose }: ImageEditorProps) {
   return (
     <EditorProvider imageUrl={imageUrl}>
-      <ImageEditorContent />
+      <ImageEditorContent onClose={onClose} />
     </EditorProvider>
   );
 };

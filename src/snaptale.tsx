@@ -19,27 +19,25 @@ export function init() {
   const root = createRoot(elem);
   root.render(
     <StrictMode>
-      <Editor />
+      <Editor onClose={() => removeElement('snaptale-root')} />
     </StrictMode>
   );
 
   return root;
 }
 
+function removeElement(elementId: string) {
+  const elem = document.getElementById(elementId);
+  if (elem) {
+    elem.remove();
+  }
+}
+
 // Expose to window for UMD/Widget usage
 if (typeof window !== "undefined") {
   (window as any).pintura = {
     init,
-    // Add a fallback if you still have HTML calling the old name
     openDefaultEditor: init,
+    closeEditor: () => removeElement('snaptale-root')
   };
 }
-
-// Auto-initialize when loaded in a browser environment
-/*if (typeof window !== "undefined") {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
-}*/
