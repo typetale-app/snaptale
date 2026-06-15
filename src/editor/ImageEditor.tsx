@@ -1,28 +1,23 @@
 import React, { useEffect, useRef } from "react";
-import { EditorProvider } from "./context/EditorContext";
-import { EditorToolbar } from "./components/EditorToolbar";
 import { EditorCanvas } from "./components/EditorCanvas";
+import { EditorToolbar } from "./components/EditorToolbar";
+import { EditorProvider } from "./context/EditorContext";
 
 interface ImageEditorProps {
   imageUrl: string;
 }
 
-import { CropToolbar } from "./components/CropToolbar";
-import { FilterToolbar } from "./components/FilterToolbar";
-import { TextToolbar } from "./components/TextToolbar";
-import { SymbolsToolbar } from "./components/SymbolsToolbar";
-import { BottomToolbar, type ToolbarPage } from "./components/BottomToolbar";
-import { useEditor } from "./context/EditorContext";
 import {
-  RotateCw,
   FlipHorizontal2,
   FlipVertical2,
-  ImageIcon,
-  Shapes,
-  SunMedium,
-  Contrast,
-  Palette,
+  RotateCw
 } from "lucide-react";
+import { BottomToolbar, type ToolbarPage } from "./components/BottomToolbar";
+import { CropToolbar } from "./components/CropToolbar";
+import { FilterToolbar } from "./components/FilterToolbar";
+import { SymbolsToolbar } from "./components/SymbolsToolbar";
+import { TextToolbar } from "./components/TextToolbar";
+import { useEditor } from "./context/EditorContext";
 
 /* ─── Placeholder toolbars for tools that don't have full implementations yet ─── */
 
@@ -96,30 +91,34 @@ export const ImageEditorContent: React.FC = () => {
   }, [activeTool, applyCrop, restoreCropView]);
 
   return (
-    <div className="flex flex-col items-center w-full h-full bg-[#222222] absolute inset-0 text-white">
-      <div className="w-full flex justify-center py-4 z-10">
-        <EditorToolbar />
-      </div>
-
-      <div className="flex-1 w-full flex items-center justify-center overflow-hidden relative">
+    <div className="relative w-full h-full overflow-hidden text-white bg-zinc-900/70">
+      {/* Canvas takes full dimensions */}
+      <div className="absolute inset-0 w-full h-full flex items-center justify-center">
         <EditorCanvas />
       </div>
 
-      {/* Unified animated bottom toolbars for each tool */}
-      <CropToolbar visible={activeTool === "crop"} />
-      <TextToolbar visible={activeTool === "text"} />
-      <FilterToolbar visible={activeTool === "filter"} />
-      <RotateToolbar visible={activeTool === "rotate"} />
-      <SymbolsToolbar visible={activeTool === "symbols"} />
+      {/* Floating Top Toolbar */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-fit">
+        <EditorToolbar />
+      </div>
 
-      {/* Fallback help text when nothing has a toolbar */}
-      {activeTool === null && (
-        <div className="py-6">
-          <p className="text-zinc-500 text-sm">
-            Use wheel to zoom • Drag background to pan • Select tools to edit
-          </p>
-        </div>
-      )}
+      {/* Floating Bottom Toolbars / Guides */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 w-fit flex flex-col items-center">
+        <CropToolbar visible={activeTool === "crop"} />
+        <TextToolbar visible={activeTool === "text"} />
+        <FilterToolbar visible={activeTool === "filter"} />
+        <RotateToolbar visible={activeTool === "rotate"} />
+        <SymbolsToolbar visible={activeTool === "symbols"} />
+
+        {/* Fallback help text when nothing has a toolbar */}
+        {activeTool === null && (
+          <div className="px-4 py-2 bg-zinc-900/60 backdrop-blur-md rounded-full border border-white/5 shadow-[0_4px_12px_rgba(0,0,0,0.3)] animate-fade-in">
+            <p className="text-zinc-400 text-xs tracking-wide select-none">
+              Use wheel to zoom • Drag background to pan • Select tools to edit
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -133,3 +132,4 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({ imageUrl }) => {
 };
 
 export default ImageEditor;
+

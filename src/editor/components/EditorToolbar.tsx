@@ -1,8 +1,7 @@
-import React from "react";
-import { Download, Crop, Type, Shapes, Check, Sparkles } from "lucide-react";
-import { useEditor, type ToolType } from "../context/EditorContext";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Check, Crop, Download, Shapes, Sparkles, Type } from "lucide-react";
+import React from "react";
+import { useEditor, type ToolType } from "../context/EditorContext";
 import { useExport } from "../hooks/useExport";
 import { useReset } from "../hooks/useReset";
 
@@ -24,16 +23,10 @@ export const EditorToolbar: React.FC = () => {
       {TOOLS.map(({ id, icon: Icon, title }) => (
         <Button
           key={id}
-          variant="ghost"
-          size="icon"
-          onClick={() => setActiveTool(id)}
+          variant={activeTool === id ? "studio-active" : "studio"}
+          size="studio-icon"
+          onClick={() => setActiveTool(activeTool === id ? null : id)}
           title={title}
-          className={cn(
-            "w-9 h-9 rounded-xl transition-all duration-200",
-            activeTool === id
-              ? "bg-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
-              : "text-white/60 hover:text-white hover:bg-white/5"
-          )}
         >
           <Icon size={18} />
         </Button>
@@ -44,26 +37,36 @@ export const EditorToolbar: React.FC = () => {
       {/* Actions */}
       <Button
         onClick={handleReset}
-        variant="ghost"
-        className="h-9 px-3 text-xs font-medium rounded-xl text-white/60 hover:text-white hover:bg-white/5 transition-all"
+        variant="studio-ghost"
+        size="studio"
         title="Reset all changes"
       >
         Reset
       </Button>
 
-      <Button
-        onClick={handleExport}
-        variant="ghost"
-        className="h-9 px-3 gap-2 text-xs font-medium rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
-      >
-        <Download size={14} />
-        Export
-      </Button>
-      
-      <Button onClick={handleExport} variant="ghost" className="h-9 w-9 p-0 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" title="Apply changes">
-        <Check size={16} />
-      </Button>
+      {activeTool === null ? (
+        <Button
+          onClick={handleExport}
+          variant="studio-primary"
+          title="Export edited image"
+          className="w-25"
+        >
+          <Download size={14} />
+          Export
+        </Button>
+      ) : (
+        <Button
+          onClick={() => setActiveTool(null)}
+          variant="studio-primary"
+          size="studio-icon"
+          className="animate-fade-in"
+          title="Done / Apply changes"
+        >
+          <Check size={16} />
+        </Button>
+      )}
     </div>
   );
 };
+
 

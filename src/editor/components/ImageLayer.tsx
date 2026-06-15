@@ -4,6 +4,164 @@ import Konva from "konva";
 import useImage from "use-image";
 import { useEditor } from "../context/EditorContext";
 
+const ClarendonFilter = (imageData: ImageData) => {
+  const data = imageData.data;
+  const len = data.length;
+  for (let i = 0; i < len; i += 4) {
+    let r = data[i]!;
+    let g = data[i+1]!;
+    let b = data[i+2]!;
+    r = (r - 127) * 1.1 + 127;
+    g = (g - 127) * 1.1 + 127;
+    b = (b - 127) * 1.1 + 127;
+    const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+    if (luma < 127) {
+      b += (127 - luma) * 0.15;
+      g += (127 - luma) * 0.05;
+    } else {
+      r += (luma - 127) * 0.15;
+      g += (luma - 127) * 0.1;
+    }
+    data[i] = Math.max(0, Math.min(255, r));
+    data[i+1] = Math.max(0, Math.min(255, g));
+    data[i+2] = Math.max(0, Math.min(255, b));
+  }
+};
+
+const GinghamFilter = (imageData: ImageData) => {
+  const data = imageData.data;
+  const len = data.length;
+  for (let i = 0; i < len; i += 4) {
+    let r = data[i]!;
+    let g = data[i+1]!;
+    let b = data[i+2]!;
+    const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+    r = r * 0.7 + luma * 0.3;
+    g = g * 0.7 + luma * 0.3;
+    b = b * 0.7 + luma * 0.3;
+    r = (r - 127) * 0.9 + 127 + 10;
+    g = (g - 127) * 0.9 + 127 + 10;
+    b = (b - 127) * 0.9 + 127 + 15;
+    data[i] = Math.max(0, Math.min(255, r));
+    data[i+1] = Math.max(0, Math.min(255, g));
+    data[i+2] = Math.max(0, Math.min(255, b));
+  }
+};
+
+const JunoFilter = (imageData: ImageData) => {
+  const data = imageData.data;
+  const len = data.length;
+  for (let i = 0; i < len; i += 4) {
+    let r = data[i]!;
+    let g = data[i+1]!;
+    let b = data[i+2]!;
+    r = (r - 127) * 1.15 + 127 + 10;
+    g = (g - 127) * 1.15 + 127 + 8;
+    b = (b - 127) * 1.1 + 127 + 2;
+    r = r * 1.05;
+    g = g * 1.02;
+    data[i] = Math.max(0, Math.min(255, r));
+    data[i+1] = Math.max(0, Math.min(255, g));
+    data[i+2] = Math.max(0, Math.min(255, b));
+  }
+};
+
+const LarkFilter = (imageData: ImageData) => {
+  const data = imageData.data;
+  const len = data.length;
+  for (let i = 0; i < len; i += 4) {
+    let r = data[i]!;
+    let g = data[i+1]!;
+    let b = data[i+2]!;
+    r += 5; g += 5; b += 5;
+    g *= 1.05;
+    b *= 1.08;
+    const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+    r = r * 0.8 + luma * 0.2;
+    data[i] = Math.max(0, Math.min(255, r));
+    data[i+1] = Math.max(0, Math.min(255, g));
+    data[i+2] = Math.max(0, Math.min(255, b));
+  }
+};
+
+const ValenciaFilter = (imageData: ImageData) => {
+  const data = imageData.data;
+  const len = data.length;
+  for (let i = 0; i < len; i += 4) {
+    let r = data[i]!;
+    let g = data[i+1]!;
+    let b = data[i+2]!;
+    r = r * 1.08 + 10;
+    g = g * 1.04 + 8;
+    b = b * 0.9 + 5;
+    r = (r - 127) * 0.95 + 127;
+    g = (g - 127) * 0.95 + 127;
+    b = (b - 127) * 0.95 + 127;
+    data[i] = Math.max(0, Math.min(255, r));
+    data[i+1] = Math.max(0, Math.min(255, g));
+    data[i+2] = Math.max(0, Math.min(255, b));
+  }
+};
+
+const LudwigFilter = (imageData: ImageData) => {
+  const data = imageData.data;
+  const len = data.length;
+  for (let i = 0; i < len; i += 4) {
+    let r = data[i]!;
+    let g = data[i+1]!;
+    let b = data[i+2]!;
+    r = (r - 127) * 1.05 + 127;
+    g = (g - 127) * 1.05 + 127;
+    b = (b - 127) * 1.05 + 127;
+    const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+    r = r * 1.15;
+    g = g * 0.9 + luma * 0.1;
+    b = b * 0.9 + luma * 0.1;
+    data[i] = Math.max(0, Math.min(255, r));
+    data[i+1] = Math.max(0, Math.min(255, g));
+    data[i+2] = Math.max(0, Math.min(255, b));
+  }
+};
+
+const LofiFilter = (imageData: ImageData) => {
+  const data = imageData.data;
+  const len = data.length;
+  for (let i = 0; i < len; i += 4) {
+    let r = data[i]!;
+    let g = data[i+1]!;
+    let b = data[i+2]!;
+    r = (r - 127) * 1.3 + 127;
+    g = (g - 127) * 1.3 + 127;
+    b = (b - 127) * 1.3 + 127;
+    const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+    r = r * 1.35 - luma * 0.35;
+    g = g * 1.35 - luma * 0.35;
+    b = b * 1.35 - luma * 0.35;
+    data[i] = Math.max(0, Math.min(255, r));
+    data[i+1] = Math.max(0, Math.min(255, g));
+    data[i+2] = Math.max(0, Math.min(255, b));
+  }
+};
+
+const SierraFilter = (imageData: ImageData) => {
+  const data = imageData.data;
+  const len = data.length;
+  for (let i = 0; i < len; i += 4) {
+    let r = data[i]!;
+    let g = data[i+1]!;
+    let b = data[i+2]!;
+    r = (r - 127) * 0.85 + 127 + 10;
+    g = (g - 127) * 0.85 + 127 + 8;
+    b = (b - 127) * 0.85 + 127 + 2;
+    r *= 1.05;
+    g *= 1.02;
+    b *= 0.95;
+    data[i] = Math.max(0, Math.min(255, r));
+    data[i+1] = Math.max(0, Math.min(255, g));
+    data[i+2] = Math.max(0, Math.min(255, b));
+  }
+};
+
 export const ImageLayer: React.FC = () => {
   const {
     imageUrl,
@@ -144,6 +302,17 @@ export const ImageLayer: React.FC = () => {
         
         if (filters.preset === "grayscale") activeFilters.push(Konva.Filters.Grayscale);
         if (filters.preset === "sepia") activeFilters.push(Konva.Filters.Sepia);
+        if (filters.preset === "invert") activeFilters.push(Konva.Filters.Invert);
+        if (filters.preset === "pixelate") activeFilters.push(Konva.Filters.Pixelate);
+        if (filters.preset === "noise") activeFilters.push(Konva.Filters.Noise);
+        if (filters.preset === "clarendon") activeFilters.push(ClarendonFilter);
+        if (filters.preset === "gingham") activeFilters.push(GinghamFilter);
+        if (filters.preset === "juno") activeFilters.push(JunoFilter);
+        if (filters.preset === "lark") activeFilters.push(LarkFilter);
+        if (filters.preset === "valencia") activeFilters.push(ValenciaFilter);
+        if (filters.preset === "ludwig") activeFilters.push(LudwigFilter);
+        if (filters.preset === "lofi") activeFilters.push(LofiFilter);
+        if (filters.preset === "sierra") activeFilters.push(SierraFilter);
         
         if (filters.brightness !== 0) activeFilters.push(Konva.Filters.Brighten);
         if (filters.contrast !== 0) activeFilters.push(Konva.Filters.Contrast);
@@ -211,6 +380,8 @@ export const ImageLayer: React.FC = () => {
           luminance={filters.saturation} // Using luminance for saturation as simple workaround or hue
           saturation={filters.saturation}
           blurRadius={filters.blur}
+          pixelSize={filters.preset === "pixelate" ? 8 : 1}
+          noise={filters.preset === "noise" ? 0.2 : 0}
         />
       </Group>
     </Group>

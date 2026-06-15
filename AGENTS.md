@@ -109,3 +109,18 @@ When adding features or refactoring, AI agents and developers **MUST** adhere to
   ```bash
   bun x tsc --noEmit
   ```
+
+---
+
+## 6. Design Context & Impeccable Setup
+
+This project uses the `impeccable` design harness to maintain visual consistency and alignment.
+
+- **Strategic Guidelines**: Refer to [PRODUCT.md](file:///home/tsl4/snaptale/PRODUCT.md) for target users, brand personality, and design principles.
+- **Visual Design System**: Refer to [DESIGN.md](file:///home/tsl4/snaptale/DESIGN.md) for typography, colors, and layout instructions.
+- **Active Register**: `product`
+- **Creative North Star**: "The Precise Minimalist Studio" (sleek dark workspace containers paired with highly responsive, tactile, and playful canvas interactive controls).
+- **Core Principles**:
+  - *Instant Response*: Real-time canvas editing without frame delay or input lag.
+  - *Clean Discretion*: Hide non-contextual options to keep focus on the image.
+  - *Controlled Vibrancy*: Sleek neutral toolbar frames contrast with playful, colorful annotations on the canvas.

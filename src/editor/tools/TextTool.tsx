@@ -15,9 +15,10 @@ const TextItem: React.FC<{
   useEffect(() => {
     if (isSelected && trRef.current && textRef.current) {
       trRef.current.nodes([textRef.current]);
+      trRef.current.forceUpdate();
       trRef.current.getLayer()?.batchDraw();
     }
-  }, [isSelected]);
+  }, [isSelected, config.fontFamily, config.fontSize, config.fontStyle, config.textDecoration, config.letterSpacing]);
 
   // Delete on keyboard
   useEffect(() => {

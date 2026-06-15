@@ -77,7 +77,7 @@ export const BottomToolbar: React.FC<BottomToolbarProps> = ({ visible, pages }) 
                         : "-translate-x-8")
                 }`}
               >
-                <div className="flex items-center h-12 gap-3">
+                <div className="flex items-center min-h-12 py-2 gap-3">
                   {/* Back button for sub-pages */}
                   {index > 0 && index === activePageIndex && (
                     <button

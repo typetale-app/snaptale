@@ -1,17 +1,32 @@
-import React from "react";
 import {
-  Plus,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  ArrowLeftRight,
+  ArrowUpDown,
+  Blend,
   Bold,
-  Italic,
-  Underline,
-  Trash2,
   ChevronDown,
   ChevronRight,
-  MoveHorizontal,
-  Blend,
+  Droplet,
+  Italic,
   Layers,
+  MoveHorizontal,
+  Plus,
   Settings2,
+  Trash2,
+  Underline,
 } from "lucide-react";
+import React from "react";
 import { useEditor, type TextConfig } from "../context/EditorContext";
 import {
   BottomToolbar,
@@ -76,11 +91,10 @@ const ToggleBtn: React.FC<{
   <button
     onClick={onClick}
     title={title}
-    className={`w-8 h-8 flex items-center justify-center rounded-xl transition-all duration-200 ${
-      active
-        ? "bg-white text-black shadow-sm"
-        : "text-white/60 hover:text-white hover:bg-white/10"
-    }`}
+    className={`w-8 h-8 flex items-center justify-center rounded-xl transition-all duration-200 ${active
+      ? "bg-white text-black shadow-sm"
+      : "text-white/60 hover:text-white hover:bg-white/10"
+      }`}
   >
     {children}
   </button>
@@ -97,11 +111,10 @@ const SubOptionBtn: React.FC<{
   return (
     <button
       onClick={() => navigateTo(pageId)}
-      className={`flex items-center gap-1.5 h-8 px-2.5 rounded-xl transition-all text-xs ${
-        active
-          ? "bg-white text-black shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
-          : "text-white/60 hover:text-white hover:bg-white/10"
-      }`}
+      className={`flex items-center gap-1.5 h-8 px-2.5 rounded-xl transition-all text-xs ${active
+        ? "bg-white text-black shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+        : "text-white/60 hover:text-white hover:bg-white/10"
+        }`}
     >
       {icon}
       <span className="font-medium">{label}</span>
@@ -110,18 +123,25 @@ const SubOptionBtn: React.FC<{
   );
 };
 
-/* ─── Slider with icon ─── */
-const IconSlider: React.FC<{
+/* ─── Unified Advance Slider ─── */
+const AdvanceSlider: React.FC<{
   icon: React.ReactNode;
-  title: string;
   value: number;
   onChange: (v: number) => void;
+  onReset: () => void;
   min: number;
   max: number;
   step: number;
-}> = ({ icon, title, value, onChange, min, max, step }) => (
-  <div className="flex items-center gap-2 group" title={title}>
-    <div className="text-white/40 group-hover:text-white/80 transition-colors">
+  displayValue: string;
+  title: string;
+  width?: string;
+}> = ({ icon, value, onChange, onReset, min, max, step, displayValue, title, width = "w-28" }) => (
+  <div
+    className={`flex items-center gap-2.5 ${width} group select-none cursor-pointer shrink-0`}
+    onDoubleClick={onReset}
+    title={`${title} (Double-click to reset)`}
+  >
+    <div className="text-white/40 group-hover:text-white transition-colors shrink-0">
       {icon}
     </div>
     <EditorSlider
@@ -130,33 +150,11 @@ const IconSlider: React.FC<{
       step={step}
       value={value}
       onChange={onChange}
-      className="w-14 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5"
+      className="flex-1 h-1 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5"
     />
-  </div>
-);
-
-/* ─── Slider with text label ─── */
-const LabelSlider: React.FC<{
-  label: string;
-  title: string;
-  value: number;
-  onChange: (v: number) => void;
-  min: number;
-  max: number;
-  step: number;
-}> = ({ label, title, value, onChange, min, max, step }) => (
-  <div className="flex items-center gap-2 group" title={title}>
-    <span className="text-[10px] text-white/50 font-medium uppercase tracking-wider group-hover:text-white/80 transition-colors">
-      {label}
+    <span className="text-[10px] font-semibold tabular-nums text-white/50 w-7 text-right shrink-0">
+      {displayValue}
     </span>
-    <EditorSlider
-      min={min}
-      max={max}
-      step={step}
-      value={value}
-      onChange={onChange}
-      className="w-14 [&::-webkit-slider-thumb]:w-2.5 [&::-webkit-slider-thumb]:h-2.5"
-    />
   </div>
 );
 
@@ -219,23 +217,21 @@ const TextMainContent: React.FC = () => {
 
         {/* Typography Group */}
         <div className="flex items-center gap-2">
-          <div className="relative">
-            <select
-              value={selectedText.fontFamily}
-              onChange={(e) => update({ fontFamily: e.target.value })}
-              className="appearance-none h-8 bg-white/5 hover:bg-white/10 rounded-xl pl-2 pr-6 text-xs font-medium text-white/90 focus:outline-none transition-colors cursor-pointer min-w-[100px]"
-            >
+          <Select
+            value={selectedText.fontFamily}
+            onValueChange={(val) => update({ fontFamily: val })}
+          >
+            <SelectTrigger size="sm" className="min-w-28 h-8 bg-white/5 hover:bg-white/10 text-white border-transparent focus:border-white/10 rounded-xl text-xs gap-1">
+              <SelectValue placeholder="Font" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#18181A] border-white/10 text-white">
               {FONT_FAMILIES.map((f) => (
-                <option key={f} value={f}>
+                <SelectItem key={f} value={f} className="text-xs hover:bg-white/10 text-white cursor-pointer">
                   {f}
-                </option>
+                </SelectItem>
               ))}
-            </select>
-            <ChevronDown
-              size={12}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none"
-            />
-          </div>
+            </SelectContent>
+          </Select>
 
           <NumericInput
             value={selectedText.fontSize}
@@ -279,34 +275,52 @@ const TextMainContent: React.FC = () => {
 
         <div className="w-px h-4 bg-white/10" />
 
-        {/* Color Group */}
-        <div className="flex items-center gap-1.5">
-          <div className="relative flex items-center justify-center">
-            <input
-              type="color"
-              value={selectedText.fill}
-              onChange={(e) => update({ fill: e.target.value })}
-              className="w-5 h-5 rounded-full cursor-pointer bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border [&::-webkit-color-swatch]:border-white/20 hover:scale-110 transition-transform shadow-sm"
-              title="Custom Color"
-            />
-          </div>
-          <div className="w-px h-3 bg-white/10 mx-0.5" />
-          <div className="flex gap-1 items-center">
-            {PRESET_COLORS.map((c) => (
-              <button
-                key={c}
-                onClick={() => update({ fill: c })}
-                className={`w-4 h-4 rounded-full transition-all duration-100 ${
-                  selectedText.fill.toLowerCase() === c.toLowerCase()
-                    ? "ring-1 ring-white ring-offset-2 ring-offset-[#18181A] scale-110 border-none shadow-sm"
-                    : "hover:scale-110 border border-white/10"
-                }`}
-                style={{ backgroundColor: c }}
-                title={c}
+        {/* Color Popover */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              title="Text Color"
+              className="flex items-center gap-2 h-8 px-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all text-xs"
+            >
+              <div
+                className="w-4 h-4 rounded-full border border-white/20 shadow-sm"
+                style={{ backgroundColor: selectedText.fill }}
               />
-            ))}
-          </div>
-        </div>
+              <span className="font-medium">Color</span>
+              <ChevronDown size={12} className="text-white/40 ml-0.5" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="bg-[#18181A]/95 border-white/10 text-white p-3 rounded-2xl w-48 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+            <div className="flex flex-col gap-3">
+              <span className="text-xs font-semibold text-white/60 tracking-wide">Presets</span>
+              <div className="grid grid-cols-6 gap-2">
+                {PRESET_COLORS.map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => update({ fill: c })}
+                    className={`w-5 h-5 rounded-full transition-all duration-100 relative ${selectedText.fill.toLowerCase() === c.toLowerCase()
+                      ? "ring-2 ring-white ring-offset-2 ring-offset-[#18181A] scale-110 border-none shadow-sm"
+                      : "hover:scale-110 border border-white/10"
+                      }`}
+                    style={{ backgroundColor: c }}
+                    title={c}
+                  />
+                ))}
+              </div>
+              <div className="w-full h-px bg-white/10" />
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-white/60 tracking-wide">Custom</span>
+                <input
+                  type="color"
+                  value={selectedText.fill}
+                  onChange={(e) => update({ fill: e.target.value })}
+                  className="w-6 h-6 rounded-full cursor-pointer bg-transparent p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border [&::-webkit-color-swatch]:border-white/20 hover:scale-110 transition-transform shadow-sm"
+                  title="Custom Color"
+                />
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
 
         <div className="w-px h-4 bg-white/10" />
 
@@ -344,43 +358,55 @@ const TextAdvanceContent: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center gap-5 w-full overflow-x-auto no-scrollbar scroll-smooth pr-4">
-      {/* Opacity & Spacing */}
-      <div className="flex items-center gap-4 shrink-0">
-        <IconSlider
-          icon={<Blend size={13} />}
-          title="Opacity"
+    <div className="flex items-center gap-5 py-1 px-1 w-full animate-fade-in overflow-x-auto no-scrollbar scroll-smooth pr-4">
+      {/* Group 1: Typography (Left Section) */}
+      <div className="flex items-center gap-5 shrink-0">
+        <AdvanceSlider
+          icon={<Blend size={14} />}
           value={selectedText.opacity}
           onChange={(v) => update({ opacity: v })}
+          onReset={() => update({ opacity: 1 })}
           min={0}
           max={1}
           step={0.01}
+          displayValue={`${Math.round(selectedText.opacity * 100)}%`}
+          title="Opacity"
+          width="w-28"
         />
-        <IconSlider
-          icon={<MoveHorizontal size={13} />}
-          title="Letter Spacing"
+
+        <AdvanceSlider
+          icon={<MoveHorizontal size={14} />}
           value={selectedText.letterSpacing}
           onChange={(v) => update({ letterSpacing: v })}
+          onReset={() => update({ letterSpacing: 0 })}
           min={-5}
           max={20}
           step={0.5}
+          displayValue={`${selectedText.letterSpacing}px`}
+          title="Letter Spacing"
+          width="w-28"
         />
       </div>
 
-      <div className="w-px h-4 bg-white/10 shrink-0" />
+      {/* Vertical Separator */}
+      <div className="w-px h-5 bg-white/10 shrink-0 self-center mx-1" />
 
-      {/* Shadow Toggle & Settings */}
-      <div className="flex items-center gap-4 shrink-0">
-        <div className="flex items-center gap-3">
-          <ToggleBtn
-            active={selectedText.shadowEnabled}
+      {/* Group 2: Shadow Settings (Right Section) */}
+      <div className="flex items-center gap-5 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
+          <button
             onClick={() =>
               update({ shadowEnabled: !selectedText.shadowEnabled })
             }
             title="Toggle Shadow"
+            className={`flex items-center gap-1.5 h-8 px-2.5 rounded-xl transition-all duration-200 text-xs font-semibold ${selectedText.shadowEnabled
+              ? "bg-white text-black shadow-sm"
+              : "text-white/60 hover:text-white hover:bg-white/10"
+              }`}
           >
             <Layers size={13} />
-          </ToggleBtn>
+            <span>Shadow</span>
+          </button>
 
           <input
             type="color"
@@ -391,43 +417,53 @@ const TextAdvanceContent: React.FC = () => {
           />
         </div>
 
-        <LabelSlider
-          label="Blur"
-          title="Shadow Blur"
-          value={selectedText.shadowBlur}
-          onChange={(v) => update({ shadowBlur: v })}
-          min={0}
-          max={50}
-          step={1}
-        />
+        {/* Shadow Sliders: only interactive when shadow is enabled */}
+        <div className={`flex items-center gap-5 transition-all duration-200 ${selectedText.shadowEnabled ? "opacity-100" : "opacity-35 pointer-events-none"
+          }`}>
+          <AdvanceSlider
+            icon={<Droplet size={13} />}
+            value={selectedText.shadowBlur}
+            onChange={(v) => update({ shadowBlur: v })}
+            onReset={() => update({ shadowBlur: 0 })}
+            min={0}
+            max={50}
+            step={1}
+            displayValue={`${selectedText.shadowBlur}px`}
+            title="Shadow Blur"
+            width="w-28"
+          />
 
-        <LabelSlider
-          label="X"
-          title="X Offset"
-          value={selectedText.shadowOffsetX}
-          onChange={(v) => update({ shadowOffsetX: v })}
-          min={-50}
-          max={50}
-          step={1}
-        />
+          <AdvanceSlider
+            icon={<ArrowLeftRight size={13} />}
+            value={selectedText.shadowOffsetX}
+            onChange={(v) => update({ shadowOffsetX: v })}
+            onReset={() => update({ shadowOffsetX: 0 })}
+            min={-50}
+            max={50}
+            step={1}
+            displayValue={`${selectedText.shadowOffsetX}px`}
+            title="Shadow X Offset"
+            width="w-28"
+          />
 
-        <LabelSlider
-          label="Y"
-          title="Y Offset"
-          value={selectedText.shadowOffsetY}
-          onChange={(v) => update({ shadowOffsetY: v })}
-          min={-50}
-          max={50}
-          step={1}
-        />
+          <AdvanceSlider
+            icon={<ArrowUpDown size={13} />}
+            value={selectedText.shadowOffsetY}
+            onChange={(v) => update({ shadowOffsetY: v })}
+            onReset={() => update({ shadowOffsetY: 0 })}
+            min={-50}
+            max={50}
+            step={1}
+            displayValue={`${selectedText.shadowOffsetY}px`}
+            title="Shadow Y Offset"
+            width="w-28"
+          />
+        </div>
       </div>
     </div>
   );
 };
 
-/* ═══════════════════════════════════════════════════════════
-   Exported TextToolbar
-   ═══════════════════════════════════════════════════════════ */
 export const TextToolbar: React.FC<{ visible: boolean }> = ({ visible }) => {
   const pages: ToolbarPage[] = [
     { id: "main", label: "Text", content: <TextMainContent /> },

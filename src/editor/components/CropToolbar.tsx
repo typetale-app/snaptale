@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { useEditor } from "../context/EditorContext";
 import { EditorSlider } from "./EditorSlider";
-import ImageRotateIcon from "@/components/icons/image-rotate";
 import {
   BottomToolbar,
   useToolbarNav,
