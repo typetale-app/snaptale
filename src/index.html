@@ -75,42 +75,32 @@
   <body>
     <div class="container">
       <h1>Snaptale Image Editor Demo</h1>
-      <p>
-        Click the button below to launch the standalone Snaptale image editor
-        over this page.
-      </p>
+      <p>Click the button below to launch the standalone Snaptale image editor over this page.</p>
 
-      <button onclick="window.pintura.openDefaultEditor()">
-        Launch Editor
-      </button>
+      <button onclick="window.pintura.openDefaultEditor()">Launch Editor</button>
 
       <div class="info-box">
         <h3>Where to look for code?</h3>
-        <p>
-          If you're exploring the repository, here are the key entry points:
-        </p>
+        <p>If you're exploring the repository, here are the key entry points:</p>
         <ul>
           <li>
-            <code>src/snaptale.tsx</code> - The entry point that mounts the
-            editor for UMD/Widgets (this exposes the `window.pintura` API).
+            <code>src/snaptale.tsx</code> - The entry point that mounts the editor for UMD/Widgets
+            (this exposes the `window.pintura` API).
+          </li>
+          <li><code>src/editor/page.tsx</code> - The main React wrapper rendering the editor.</li>
+          <li>
+            <code>src/editor/ImageEditor.tsx</code> - The layout component combining the canvas and
+            toolbars.
           </li>
           <li>
-            <code>src/editor/page.tsx</code> - The main React wrapper rendering
-            the editor.
-          </li>
-          <li>
-            <code>src/editor/ImageEditor.tsx</code> - The layout component
-            combining the canvas and toolbars.
-          </li>
-          <li>
-            <code>src/editor/context/EditorContext.tsx</code> - The central
-            state management for the entire editor.
+            <code>src/editor/context/EditorContext.tsx</code> - The central state management for the
+            entire editor.
           </li>
         </ul>
       </div>
     </div>
 
     <!-- Load the Snaptale bundle -->
-    <script type="module" src="./snaptale.tsx"></script>
+    <script type="module" src="./snaptale.ts"></script>
   </body>
 </html>

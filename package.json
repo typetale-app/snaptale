@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "bun --hot src/index.ts",
     "start": "NODE_ENV=production bun src/index.ts",
-    "build": "bun run build.ts",
-    "build:umd": "bun run build.ts --entrypoints=src/snaptale.tsx --format=iife --name=snaptale --outdir=dist/umd --no-splitting"
+    "build:widget": "bun run build-widget.ts"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",
@@ -18,6 +17,7 @@
     "clsx": "^2.1.1",
     "emoji-picker-react": "^4.19.1",
     "lucide-react": "^0.545.0",
+    "mitt": "^3.0.1",
     "radix-ui": "^1.4.3",
     "react": "^19",
     "react-dom": "^19",
